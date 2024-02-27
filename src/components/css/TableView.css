@@ -56,7 +56,12 @@
     cursor: pointer;
     padding: .5rem .75rem;
     min-width: 4rem;
-    margin-right: .25rem;
+    margin-right: .5rem;
+    font-size: 14px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .tv-createbtn:hover {
+    background-color: #D2691E    ;
   }
   .tv-editbtn {
     background-color: #0096FF;
@@ -68,6 +73,9 @@
     min-width: 4rem;
     margin-right: .25rem;
   }
+  .tv-editbtn:hover {
+    background-color: #2980b9;
+  }
   .tv-deletebtn {
     background-color: #FF0000;
     color: #fff;
@@ -77,6 +85,10 @@
     padding: .5rem .75rem;
     min-width: 4rem;
     margin-left: .25rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .tv-deletebtn:hover {
+    background-color: #cc0000;
   }
   .tv-action {
     display: flex;
@@ -99,16 +111,68 @@
     margin: .5rem .75rem;
   }
   .tv-action-create {
-    margin: .5rem .75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .tv-action-upload {
-    margin: .5rem .75rem;
-  }
-  .tv-action-upload button {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   /* Display the button when the fileUploaded state is true */
   .tv-action-upload button.show {
     display: inline-block;
   }
+
+  /* Add this to your CSS file */
+.custom-file-button {
+    /* Define styles for the custom file button */
+    background-color: #0096FF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    margin-right: 8px;
+    min-width: 4rem;
+    font-size: 14px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .custom-file-button:hover {
+    background-color: #2980b9;
+  }
+  /* Visually hide the actual file input */
+  input[type="file"] {
+    display: none;
+  }
+  .custom-file-name {
+    margin-right: 8px;
+    font-size: 14px;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .custom-save-button {
+    /* Define styles for the custom save button */
+    background-color: #45a049;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    font-size: 14px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .custom-save-button:hover {
+    background-color: #3F704D;
+  }
+  
+  /* Add any additional styles or modifications as needed */
+  

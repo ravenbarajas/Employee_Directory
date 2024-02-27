@@ -65,8 +65,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
       if (response.ok) {
         console.log('Creating new employee:', newEmployeeData);
 
-        // Reset form or take other actions as needed
-
         // Close the modal
         onClose();
 
@@ -76,6 +74,9 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
         }
         // Show a dialog box for successful creation
         window.alert('Employee created successfully!');
+
+        // Refresh the entire page
+        window.location.reload();
       } else {
         // Log the error details
         const errorDetails = await response.json();
@@ -124,7 +125,7 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
           readOnly />
 
         <label>Department: </label>
-        <select name="empDept" value={newEmployeeData.empDept} onChange={handleDepartmentChange}>
+        <select className="cm-dept" name="empDept" value={newEmployeeData.empDept} onChange={handleDepartmentChange}>
           <option value="">Select Department</option>
           {departmentList.map((dept) => (
             <option key={dept.deptID} value={dept.deptName}>

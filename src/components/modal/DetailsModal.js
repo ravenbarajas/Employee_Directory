@@ -7,7 +7,7 @@ const DetailsModal = ({ employee, onClose }) => {
     <div className="details-modal">
       <div className="dm-header">
         <div className='em-header-title'>
-          <h2>Edit Employee</h2>
+          <h2>Employee Details</h2>
         </div>
         <div className='dm-header-close'>
           <i className="fa-regular fa-circle-xmark" onClick={onClose}></i>

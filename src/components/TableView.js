@@ -141,7 +141,7 @@ const TableView = () => {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
+  
     if (selectedFile) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -150,11 +150,11 @@ const TableView = () => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
+  
         // Assuming the first row contains headers
         const sheetHeaders = jsonData[0];
         const dataRows = jsonData.slice(1);
-
+  
         const formattedData = dataRows.map((row) =>
           sheetHeaders.reduce((obj, key, index) => {
             if (key === 'empSalary') {
@@ -171,25 +171,25 @@ const TableView = () => {
             return obj;
           }, {})
         );
-
+  
         setHeaders(sheetHeaders);
-
+  
         const nonEmptyRows = formattedData.filter((row) =>
           Object.values(row).some((cell) => cell !== undefined && cell !== null && cell !== "")
         );
-
+  
         setTableData(nonEmptyRows);
         setFilteredTableData(nonEmptyRows); // Update filtered data
-
-        // Show the save button
-        setFileUploaded(true);
-        console.log('fileUploaded:', fileUploaded);
+  
+        // Update the fileUploaded state with the selected file
+        setFileUploaded(selectedFile);
+        console.log('fileUploaded:', selectedFile);
       };
-
+  
       reader.readAsArrayBuffer(selectedFile);
     }
   };
-
+  
   const handleEdit = (employee) => {
     setSelectedEmployee(employee);
     setIsEditModalOpen(true);
@@ -239,7 +239,12 @@ const TableView = () => {
   const closeCreateModal = () => {
     setIsCreateModalOpen(false);
   };
-  
+
+  const handleDetails = (employee) => {
+    setSelectedEmployee(employee);
+    setIsDetailsModalOpen(true);
+  };
+
   // Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -264,12 +269,12 @@ const TableView = () => {
   // Render table rows
   const renderTableRows = () => {
     return filteredAndPaginatedData.map((row, index) => (
-      <tr key={index} onClick={() => setIsDetailsModalOpen(true)}>
+      <tr key={index} onClick={() => handleDetails(row)}>
         {headers.map((header) => (
           <td key={header}>{row[header]}</td>
         ))}
         <td>
-          <button className="tv-editbtn" onClick={(e) => { e.stopPropagation(); setIsEditModalOpen(true); setSelectedEmployee(row); }}>
+          <button className="tv-editbtn" onClick={(e) => { e.stopPropagation(); handleEdit(row) }}>
             Edit
           </button>
           <button className="tv-deletebtn" onClick={(e) => { e.stopPropagation(); handleDelete(row.empID) }}>
@@ -288,25 +293,33 @@ const TableView = () => {
         </div>
 
         <div className='tv-body'>
-          <div className='tv-action-search'>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className='tv-action-create'>
-            <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
-              <i className="fas fa-plus"></i> Add New Employee
-            </button>
-          </div>
-          <div className='tv-action-upload'>
-            <input type="file" onChange={handleFileChange} />
-            <button className={fileUploaded ? 'show' : ''} onClick={handleSave}>
-              Save to Database
-            </button>
-          </div>
+            <div className='tv-action-search'>
+                <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            <div className='tv-action-create'>
+                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
+                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add New Employee
+                </button>
+            </div>
+            <div className='tv-action-upload custom-file-container'>
+                <label htmlFor="fileInput" className="custom-file-button">
+                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
+                </label>
+                <input type="file" id="fileInput" onChange={handleFileChange} />
+                {fileUploaded && (
+                    <span className="custom-file-name">{fileUploaded.name}</span>
+                )}
+                {fileUploaded && (
+                    <button className="custom-save-button" onClick={handleSave}>
+                    <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
+                    </button>
+                )}
+            </div>
         </div>
       </div>
   

@@ -38,6 +38,8 @@
     display: block;
     font-size: 16px;
     margin-bottom: 5px;
+    margin-top: 10px;
+    font-weight: bold;
   }
   
   .edit-modal input {
@@ -58,6 +60,9 @@
     cursor: pointer;
     font-size: 16px;
     margin-top: 15px;
+  }
+  .em-update:hover {
+    background-color: #3F704D;
   }
   .em-close {
     background-color: #fff;
