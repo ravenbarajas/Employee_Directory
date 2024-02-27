@@ -1,0 +1,114 @@
+/* TableView.css */
+/* Import Font Awesome styles */
+@import '@fortawesome/fontawesome-free/css/all.css';
+
+.table-container {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .styled-table {
+    width: auto;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 16px;
+    text-align: left;
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: .25rem .75rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .styled-table th {
+    background-color: #f2f2f2;
+  }
+
+  /* Add this to TableView.css */
+  .styled-table tbody tr {
+    cursor: pointer;
+  }
+
+  .styled-table tbody tr:hover {
+    background-color: #f5f5f5; /* Add a background color on hover if desired */
+  }
+
+  .tableview-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-firstpage, .btn-prevpage, .btn-nextpage, .btn-lastpage {
+    margin: .25rem .5rem;
+  } 
+  .pagination-indicator {
+    padding: .25rem .75rem;
+  }
+  .tv-createbtn {
+    background-color: #FF8C00    ;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    min-width: 4rem;
+    margin-right: .25rem;
+  }
+  .tv-editbtn {
+    background-color: #0096FF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    min-width: 4rem;
+    margin-right: .25rem;
+  }
+  .tv-deletebtn {
+    background-color: #FF0000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    min-width: 4rem;
+    margin-left: .25rem;
+  }
+  .tv-action {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .tv-body {
+    display: flex;
+    flex-direction: row;
+    padding: .5rem .75rem;
+    border: 1px solid #000;
+  }
+  .tv-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .tv-action-search {
+    margin: .5rem .75rem;
+  }
+  .tv-action-create {
+    margin: .5rem .75rem;
+  }
+  .tv-action-upload {
+    margin: .5rem .75rem;
+  }
+  .tv-action-upload button {
+    display: none;
+  }
+  
+  /* Display the button when the fileUploaded state is true */
+  .tv-action-upload button.show {
+    display: inline-block;
+  }

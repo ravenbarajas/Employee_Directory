@@ -1,0 +1,113 @@
+/* EditModal.css */
+
+.create-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .create-modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%; /* Adjust the width as needed */
+    max-width: 500px; /* Set a maximum width if desired */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .create-modal h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .create-modal form {
+    width: 100%;
+  }
+  
+  .create-modal p {
+    margin-bottom: 15px;
+  }
+  
+  .create-modal label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .create-modal input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+  .cm-create {
+    background-color: #45a049;
+    color: #fff;
+    padding: 10px 15px;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+  }
+  .cm-close {
+    background-color: #fff;
+    color: #FF0000;
+    padding: 10px 15px;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+  }
+  .cm-close:hover {
+    background-color: #FF0000;
+    color: #fff;
+  }
+  .cm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .cm-header-title {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+  }
+  .cm-header-close {
+    background-color: transparent;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    width: 10%;
+  }
+  .cm-header-close i{
+    font-size: 1.75rem;
+  }
+  .cm-header-close i:hover{
+    color: #FF0000;
+  }
+  .cm-form-action {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+  .cm-dept {
+    width: 100%;
+    margin-top: 2px;
+    height: 32px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
