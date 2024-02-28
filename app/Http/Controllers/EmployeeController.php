@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Imports\EmployeeImport;
 use App\Models\Employee;
 use ExcelJS\Excel;
+use Illuminate\Support\Facades\Auth;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Http\Resources\EmployeeResource;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +20,6 @@ class EmployeeController extends Controller
         $employees = Employee::all();
         return response()->json(EmployeeResource::collection($employees));
     }
-
     public function store(Request $request)
     {
         // Retrieve the maximum empID from the database

@@ -4,12 +4,14 @@
 
 namespace App\Models;
 
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class Employee extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
     use HasFactory;
+    use Authenticatable;
 
     protected $primaryKey = 'empID'; // Update the primary key
 
