@@ -24,6 +24,10 @@ const TableView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(15);
   const [fileUploaded, setFileUploaded] = useState(false);
+  const [sortOption, setSortOption] = useState(''); // New state for sorting
+  const [sortOrder, setSortOrder] = useState('asc'); // or 'desc' for descending
+  const [sortColumn, setSortColumn] = useState('empName'); // set to the column you want to be initially sorted
+
 
   useEffect(() => {
     // Fetch employees from API
@@ -43,7 +47,43 @@ const TableView = () => {
         console.error('Error fetching employees:', error);
       });
   }, []); // Add currentPage to the dependency array
+
+  // Function to handle sorting based on the selected option
+  const handleSort = (selectedOption) => {
+    // Set the selected sort option and reset the sort order
+    setSortOption(selectedOption);
+    setSortOrder('asc'); // Set the default sort order, you can modify this as needed
   
+    // Add a case for the new sorting option "deptID"
+    switch (selectedOption) {
+      case 'empName':
+        setSortColumn('empName');
+        break;
+      case 'empDeptID':
+        setSortColumn('empDeptID');
+        break;
+      // Add more cases for additional sorting options as needed
+      default:
+        setSortColumn(''); // Reset the sort column if an unknown option is selected
+    }
+  
+    // Reset the current page to the first page when changing the sorting option
+    setCurrentPage(1);
+  };
+  
+  // Function to sort the data based on the current sorting option
+  // Function to sort the data based on the current sorting option
+  const sortedData = [...filteredTableData].sort((a, b) => {
+    if (sortOption === 'empName') {
+      // Sort alphabetically by empName
+      return a[sortOption].localeCompare(b[sortOption]);
+    } else if (sortOption === 'empDeptID') {
+      // Sort by empDeptID (assuming it's a numerical value)
+      return a[sortOption] - b[sortOption];
+    }
+    // Add more sorting options as needed
+    return 0;
+  });
   const parseDate = (excelSerialDate) => {
     if (!excelSerialDate) {
       // Handle empty or undefined dates
@@ -253,9 +293,10 @@ const TableView = () => {
   // Define currentRows here
   const currentRows = filteredTableData.slice(indexOfFirstRow, indexOfLastRow);
 
-  // Filtered and paginated data
-  const filteredAndPaginatedData = tableData
-    .filter((row) =>
+  // Render table rows
+  const renderTableRows = () => {
+    // Filter the entire dataset based on the search term
+    const filteredData = sortedData.filter((row) =>
       Object.values(row).some(
         (cell) =>
           cell !== undefined &&
@@ -263,12 +304,12 @@ const TableView = () => {
           cell !== '' &&
           cell.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
-    )
-    .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    );
 
-  // Render table rows
-  const renderTableRows = () => {
-    return filteredAndPaginatedData.map((row, index) => (
+    // Apply pagination to the filtered data
+    const paginatedData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+    return paginatedData.map((row, index) => (
       <tr key={index} onClick={() => handleDetails(row)}>
         {headers.map((header) => (
           <td key={header}>{row[header]}</td>
@@ -293,33 +334,50 @@ const TableView = () => {
         </div>
 
         <div className='tv-body'>
-            <div className='tv-action-search'>
-                <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <div className='tv-action-create'>
-                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
-                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add New Employee
-                </button>
-            </div>
-            <div className='tv-action-upload custom-file-container'>
-                <label htmlFor="fileInput" className="custom-file-button">
-                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
-                </label>
-                <input type="file" id="fileInput" onChange={handleFileChange} />
-                {fileUploaded && (
-                    <span className="custom-file-name">{fileUploaded.name}</span>
-                )}
-                {fileUploaded && (
-                    <button className="custom-save-button" onClick={handleSave}>
-                    <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
-                    </button>
-                )}
-            </div>
+          <div className='tv-action-sort'>
+            <label htmlFor="sortDropdown">Sort by:&nbsp;</label>
+            <select
+              id="sortDropdown"
+              value={sortOption}
+              onChange={(e) => handleSort(e.target.value)}
+            >
+              <option value="">Select Sorting Option</option>
+              <option value="empName">Employee Name</option>
+              <option value="empDeptID">Department</option>
+              {/* Add more sorting options as needed */}
+            </select>
+          </div>
+          <div className='tv-action-search'>
+            <input
+            className='styled-search'
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset the current page to the first page when performing a new search
+              }}
+            />
+          </div>
+          <div className='tv-action-create'>
+              <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
+              <i className="fas fa-plus"></i>&nbsp;&nbsp;Add New Employee
+              </button>
+          </div>
+          <div className='tv-action-upload custom-file-container'>
+              <label htmlFor="fileInput" className="custom-file-button">
+                  <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
+              </label>
+              <input type="file" id="fileInput" onChange={handleFileChange} />
+              {fileUploaded && (
+                  <span className="custom-file-name">{fileUploaded.name}</span>
+              )}
+              {fileUploaded && (
+                  <button className="custom-save-button" onClick={handleSave}>
+                  <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
+                  </button>
+              )}
+          </div>
         </div>
       </div>
   

@@ -174,5 +174,28 @@
     background-color: #3F704D;
   }
   
-  /* Add any additional styles or modifications as needed */
+ .tv-action-sort {
+    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #sortDropdown {
+    padding: 6px;
+    font-size: 14px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }  
+  .styled-search {
+    /* Add your styling for the search input here */
+    /* For example: */
+    padding: .5rem;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
   

@@ -1,30 +1,81 @@
-// Login.js
 import React, { useState } from 'react';
-import './css/Login.css';  // Import your login stylesheet
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    empID: '',
+    empBday: new Date().toISOString().split('T')[0], // Default to today's date in 'YYYY-MM-DD' format
+  });
 
-  const handleLogin = () => {
-    // Perform your authentication logic here
-    // Check if the username and password are correct
-    // For simplicity, let's assume a simple check here
-    if (username === 'admin' && password === 'password') {
-      onLogin();  // Notify the parent component that login is successful
-    } else {
-      alert('Invalid credentials. Please try again.');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  // Example React code in Login.js
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/employees/authenticate',
+        {
+          ...formData,
+        }
+      );
+  
+      if (response.data.success) {
+        onLogin();
+        // Extract empID directly from the response
+        const empID = response.data.employee.empID;
+        // Pass the empID to the Profile component
+        navigate(`/profile/${empID}`);
+      } else {
+        setError('Invalid credentials. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      setError('Error during login. Please try again.');
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
-    <div className="login-container">
+    <div>
       <h2>Login</h2>
-      <label>Username:</label>
-      <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      <label>Password:</label>
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Login</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <label>
+          Employee ID:
+          <input
+            type="text"
+            name="empID"
+            value={formData.empID}
+            onChange={handleChange}
+          />
+        </label>
+        <br />
+        <label>
+          Birthday:
+          <DatePicker
+            selected={new Date(formData.empBday)}
+            onChange={(date) =>
+              setFormData({ ...formData, empBday: date.toISOString().split('T')[0] })
+            }
+          />
+        </label>
+        <br />
+        <input type="hidden" name="password" value="dummy_password" />
+        <br />
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 };
