@@ -6,9 +6,13 @@ import './css/TableView.css'; // Import the stylesheet
 import './css/EditModal.css'; // Import the stylesheet
 import './css/CreateModal.css'; // Import the stylesheet
 import './css/DetailsModal.css'; // Import the stylesheet
+import './css/ExportModal.css'; // Import the stylesheet
 import EditModal from './modal/EditModal.js'; // Import the EditModal component
 import CreateModal from './modal/CreateModal.js'; // Import the CreateModal component
 import DetailsModal from './modal/DetailsModal.js'; // Import the DetailsModal component
+import ExportModal from './modal/ExportModal.js'; // Import the ExportModal component
+import { saveAs } from 'file-saver';
+import * as FileSaver from 'file-saver';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
@@ -18,6 +22,7 @@ const TableView = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState({});
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,7 +32,7 @@ const TableView = () => {
   const [sortOption, setSortOption] = useState(''); // New state for sorting
   const [sortOrder, setSortOrder] = useState('asc'); // or 'desc' for descending
   const [sortColumn, setSortColumn] = useState('empName'); // set to the column you want to be initially sorted
-
+  const [exportFormat, setExportFormat] = useState('');
 
   useEffect(() => {
     // Fetch employees from API
@@ -70,7 +75,7 @@ const TableView = () => {
     // Reset the current page to the first page when changing the sorting option
     setCurrentPage(1);
   };
-  
+
   // Function to sort the data based on the current sorting option
   // Function to sort the data based on the current sorting option
   const sortedData = [...filteredTableData].sort((a, b) => {
@@ -285,6 +290,47 @@ const TableView = () => {
     setIsDetailsModalOpen(true);
   };
 
+  const exportToCSV = () => {
+    const sortedData = [...filteredTableData].sort((a, b) => {
+      const aValue = String(a[sortColumn]);
+      const bValue = String(b[sortColumn]);
+  
+      if (sortOrder === 'asc') {
+        return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
+      } else {
+        return bValue.localeCompare(aValue, undefined, { numeric: true, sensitivity: 'base' });
+      }
+    });
+  
+    const csvData = [headers.join(',')]; // Include headers in CSV
+  
+    sortedData.forEach((row) => {
+      const rowData = headers.map((header) => String(row[header]));
+      csvData.push(Object.values(rowData).join(','));
+    });
+  
+    const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8' });
+    FileSaver.saveAs(blob, 'employee_data.csv');
+  };
+  
+  const exportToXLSX = () => {
+    const sortedData = [...filteredTableData].sort((a, b) => {
+      const aValue = String(a[sortColumn]);
+      const bValue = String(b[sortColumn]);
+  
+      if (sortOrder === 'asc') {
+        return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
+      } else {
+        return bValue.localeCompare(aValue, undefined, { numeric: true, sensitivity: 'base' });
+      }
+    });
+  
+    const ws = XLSX.utils.json_to_sheet(sortedData, { header: headers });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, 'employee_data.xlsx');
+  };
+
   // Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -296,16 +342,43 @@ const TableView = () => {
   // Render table rows
   const renderTableRows = () => {
     // Filter the entire dataset based on the search term
-    const filteredData = sortedData.filter((row) =>
+    const filteredData = sortedData
+  .filter((row) => {
+    const isMatchingDeptID = row['empDeptID'] && row['empDeptID'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+    const isMatchingDeptName =
+      row['empDeptName'] && row['empDeptName'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+    return (
       Object.values(row).some(
         (cell) =>
           cell !== undefined &&
           cell !== null &&
           cell !== '' &&
-          cell.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          (sortOption === '' ||
+            ((sortOption === 'empDeptID' || sortOption === 'empDeptName') &&
+              (isMatchingDeptID || isMatchingDeptName)) ||
+            (sortOption === 'empID' && row['empID'] && row['empID'].toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (row[sortOption] !== undefined &&
+              row[sortOption] !== null &&
+              row[sortOption].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+          )
       )
     );
-
+  })
+  .sort((a, b) => {
+    if (sortOption === 'empName') {
+      // Sort alphabetically by empName
+      return a[sortOption].localeCompare(b[sortOption]);
+    } else if (sortOption === 'empDeptID') {
+      // Sort by empDeptID (assuming it's a numerical value)
+      return a[sortOption] - b[sortOption];
+    } else if (sortOption === 'empID') {
+      // Sort by empID (assuming it's a numerical value)
+      return a[sortOption] - b[sortOption];
+    }
+    // Add more sorting options as needed
+    return 0;
+  });
     // Apply pagination to the filtered data
     const paginatedData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
@@ -335,13 +408,14 @@ const TableView = () => {
 
         <div className='tv-body'>
           <div className='tv-action-sort'>
-            <label htmlFor="sortDropdown">Sort by:&nbsp;</label>
+            <label htmlFor="sortDropdown"></label>
             <select
               id="sortDropdown"
               value={sortOption}
               onChange={(e) => handleSort(e.target.value)}
-            >
-              <option value="">Select Sorting Option</option>
+            >              
+              <option value="">Select Filter</option>
+              <option value="empID">Employee ID</option>
               <option value="empName">Employee Name</option>
               <option value="empDeptID">Department</option>
               {/* Add more sorting options as needed */}
@@ -363,6 +437,14 @@ const TableView = () => {
               <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
               <i className="fas fa-plus"></i>&nbsp;&nbsp;Add New Employee
               </button>
+          </div>
+          <div className='tv-action-export'>
+            <button className="tv-exportbtn" onClick={exportToCSV}>
+              Export to CSV
+            </button>
+            <button className="tv-exportbtn" onClick={exportToXLSX}>
+              Export to XLSX
+            </button>
           </div>
           <div className='tv-action-upload custom-file-container'>
               <label htmlFor="fileInput" className="custom-file-button">
