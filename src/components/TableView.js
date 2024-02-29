@@ -407,58 +407,64 @@ const TableView = () => {
         </div>
 
         <div className='tv-body'>
-          <div className='tv-action-sort'>
-            <label htmlFor="sortDropdown"></label>
-            <select
-              id="sortDropdown"
-              value={sortOption}
-              onChange={(e) => handleSort(e.target.value)}
-            >              
-              <option value="">Select Filter</option>
-              <option value="empID">Employee ID</option>
-              <option value="empName">Employee Name</option>
-              <option value="empDeptID">Department</option>
-              {/* Add more sorting options as needed */}
-            </select>
+          <div className='tv-body-filter'>
+            <div className='tv-action-sort'>
+              <label htmlFor="sortDropdown"></label>
+              <select
+                id="sortDropdown"
+                value={sortOption}
+                onChange={(e) => handleSort(e.target.value)}
+              >              
+                <option value="">Select Filter</option>
+                <option value="empID">Employee ID</option>
+                <option value="empName">Employee Name</option>
+                <option value="empDeptID">Department</option>
+                {/* Add more sorting options as needed */}
+              </select>
+            </div>
+            <div className='tv-action-search'>
+              <input
+              className='styled-search'
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset the current page to the first page when performing a new search
+                }}
+              />
+            </div>
           </div>
-          <div className='tv-action-search'>
-            <input
-            className='styled-search'
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset the current page to the first page when performing a new search
-              }}
-            />
-          </div>
-          <div className='tv-action-create'>
-              <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
-              <i className="fas fa-plus"></i>&nbsp;&nbsp;Add New Employee
+<         div className='tv-body-maintenance'>
+            <div className='tv-action-create'>
+                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
+                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add Employee
+                </button>
+            </div>
+            <div className='tv-action-export'>
+              <button className="tv-exportbtn" onClick={exportToCSV}>
+              <i class="fa-solid fa-file-csv"></i>&nbsp;&nbsp;Export to CSV
               </button>
+              <button className="tv-exportbtn" onClick={exportToXLSX}>
+              <i class="fa-solid fa-file-excel"></i>&nbsp;&nbsp;Export to XLSX
+              </button>
+            </div>
           </div>
-          <div className='tv-action-export'>
-            <button className="tv-exportbtn" onClick={exportToCSV}>
-              Export to CSV
-            </button>
-            <button className="tv-exportbtn" onClick={exportToXLSX}>
-              Export to XLSX
-            </button>
-          </div>
-          <div className='tv-action-upload custom-file-container'>
-              <label htmlFor="fileInput" className="custom-file-button">
-                  <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
-              </label>
-              <input type="file" id="fileInput" onChange={handleFileChange} />
-              {fileUploaded && (
-                  <span className="custom-file-name">{fileUploaded.name}</span>
-              )}
-              {fileUploaded && (
-                  <button className="custom-save-button" onClick={handleSave}>
-                  <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
-                  </button>
-              )}
+          <div className='tv-body-upload'>
+            <div className='tv-action-upload custom-file-container'>
+                <label htmlFor="fileInput" className="custom-file-button">
+                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
+                </label>
+                <input type="file" id="fileInput" onChange={handleFileChange} />
+                {fileUploaded && (
+                    <span className="custom-file-name">{fileUploaded.name}</span>
+                )}
+                {fileUploaded && (
+                    <button className="custom-save-button" onClick={handleSave}>
+                    <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
+                    </button>
+                )}
+            </div>
           </div>
         </div>
       </div>

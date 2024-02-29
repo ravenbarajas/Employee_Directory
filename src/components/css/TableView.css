@@ -55,13 +55,28 @@
     border-radius: 4px;
     cursor: pointer;
     padding: .5rem .75rem;
-    min-width: 4rem;
+    max-width: 140px;
     margin-right: .5rem;
     font-size: 14px;
     transition: background-color 0.2s ease-in-out;
   }
   .tv-createbtn:hover {
     background-color: #D2691E    ;
+  }
+  .tv-exportbtn {
+    background-color: #BF40BF    ;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: .5rem .75rem;
+    max-width: 140px;
+    margin-right: .5rem;
+    font-size: 14px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  .tv-exportbtn:hover {
+    background-color: #702963    ;
   }
   .tv-editbtn {
     background-color: #0096FF;
@@ -98,9 +113,24 @@
   }
   .tv-body {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: .5rem .75rem;
     border: 1px solid #000;
+  }
+  .tv-body-filter {
+    display: flex;
+    flex-direction: row;
+  }
+  .tv-body-maintenance {
+    display: flex;
+    flex-direction: row;
+    padding-bottom:.5rem; 
+  }
+  .tv-body-upload {
+    display: flex;
+    flex-direction: row;
   }
   .tv-heading {
     display: flex;
