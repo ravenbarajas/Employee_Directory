@@ -16,6 +16,8 @@ class Employee extends Model implements \Illuminate\Contracts\Auth\Authenticatab
     protected $primaryKey = 'empID'; // Update the primary key
 
     protected $fillable = [
+        'empUsername',
+        'empPass',
         'empName',
         'empBday',
         'empDeptID',

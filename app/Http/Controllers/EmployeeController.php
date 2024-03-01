@@ -22,35 +22,39 @@ class EmployeeController extends Controller
     }
     public function store(Request $request)
     {
-        // Retrieve the maximum empID from the database
-        $maxId = Employee::max('empID');
-        
-        // Increment by 1 for the new employee
-        $newEmpId = $maxId + 1;
+            // Retrieve the maximum empID from the database
+            $maxId = Employee::max('empID');
+            
+            // Increment by 1 for the new employee
+            $newEmpId = $maxId + 1;
 
-        // Validate and store the request data
-        $request->validate([
-            'empName' => 'required|string',
-            'empBday' => 'required|date',
-            'empDeptID' => 'required|integer',
-            'empDept' => 'required|string',
-            'empSalary' => 'required|numeric',
-            // ... other validation rules for other fields
-        ]);
+            // Validate and store the request data
+            $request->validate([
+                'empName' => 'required|string',
+                'empBday' => 'required|date',
+                'empDeptID' => 'required|integer',
+                'empDept' => 'required|string',
+                'empSalary' => 'required|numeric',
+                // ... other validation rules for other fields
+            ]);
 
-        $employee = Employee::create([
-            'empID' => $newEmpId,
-            'empName' => $request->input('empName'),
-            'empBday' => $request->input('empBday'),
-            'empDeptID' => $request->input('empDeptID'),
-            'empDept' => $request->input('empDept'),
-            'empSalary' => $request->input('empSalary'),
-            // ... other fields
-        ]);
+            // Encrypt the password using bcrypt
+            $empPass = bcrypt($request->input('empPass'));
 
-        return new EmployeeResource($employee);
+            $employee = Employee::create([
+                'empID' => $newEmpId,
+                'empUsername' => $request->input('empUsername'),
+                'empPass' => $empPass,
+                'empName' => $request->input('empName'),
+                'empBday' => $request->input('empBday'),
+                'empDeptID' => $request->input('empDeptID'),
+                'empDept' => $request->input('empDept'),
+                'empSalary' => $request->input('empSalary'),
+                // ... other fields
+            ]);
+
+            return new EmployeeResource($employee);
     }
-
     public function show($id)
     {
         $employee = Employee::findOrFail($id);
