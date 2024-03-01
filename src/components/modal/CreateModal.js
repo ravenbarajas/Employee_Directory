@@ -40,7 +40,7 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
     const numericChars = '0123456789';
     const specialChars = '!@#$%^&*+#';
     const minLength = 8;
-    
+
     const randomPassword =
         getRandomChar(uppercaseChars) +
         getRandomChar(lowercaseChars) +
@@ -149,22 +149,20 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
         </div>
       </div>
       <form>
-      <label>Username: </label>
+        <label>Username: </label>
         <input
           type="text"
           name="empUsername"
           value={newEmployeeData.empUsername}
-          onChange={handleInputChange}
+          readOnly
         />
-
         <label>Password: </label>
         <input
           type="text"
           name="empPass"
           value={newEmployeeData.empPass}
-          onChange={handleInputChange}
+          readOnly
         />
-
         <label>Name: </label>
         <input
           type="text"
@@ -172,7 +170,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
           value={newEmployeeData.empName}
           onChange={handleInputChange}
         />
-
         <label>Birthday: </label>
         <input
           type="date"
@@ -180,14 +177,13 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
           value={newEmployeeData.empBday}
           onChange={handleInputChange}
         />
-
         <label>Department ID: </label>
         <input 
           type="text" 
           name="empDeptID" 
           value={newEmployeeData.empDeptID} 
-          readOnly />
-
+          readOnly 
+        />
         <label>Department: </label>
         <select className="cm-dept" name="empDept" value={newEmployeeData.empDept} onChange={handleDepartmentChange}>
           <option value="">Select Department</option>
@@ -197,7 +193,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
             </option>
           ))}
         </select>
-
         <label>Salary: </label>
         <input
           type="text"
@@ -205,7 +200,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
           value={newEmployeeData.empSalary}
           onChange={handleInputChange}
         />
-
         {/* Add other fields as needed */}
       </form>
       <div className="cm-form-action">
