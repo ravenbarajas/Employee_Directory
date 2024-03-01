@@ -188,6 +188,18 @@ const TableView = () => {
     const selectedFile = e.target.files[0];
   
     if (selectedFile) {
+      // Extract the file extension
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+      // Supported file extensions
+      const allowedExtensions = ['xlsx', 'xls', 'csv'];
+
+      // Check if the file extension is allowed
+      if (!allowedExtensions.includes(fileExtension)) {
+          // Alert the user about unsupported file type
+          alert('Only .xlsx, .xls, and .csv files are supported. Please choose a valid file.');
+          return; // Stop further processing
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         const data = new Uint8Array(event.target.result);
@@ -442,10 +454,10 @@ const TableView = () => {
                 </button>
             </div>
             <div className='tv-action-export'>
-              <button className="tv-exportbtn" onClick={exportToCSV}>
+              <button className="tv-exportcsvbtn" onClick={exportToCSV}>
               <i class="fa-solid fa-file-csv"></i>&nbsp;&nbsp;Export to CSV
               </button>
-              <button className="tv-exportbtn" onClick={exportToXLSX}>
+              <button className="tv-exportxlsxbtn" onClick={exportToXLSX}>
               <i class="fa-solid fa-file-excel"></i>&nbsp;&nbsp;Export to XLSX
               </button>
             </div>

@@ -16,7 +16,6 @@
     font-size: 16px;
     text-align: left;
   }
-
   .styled-table th,
   .styled-table td {
     padding: .25rem .75rem;
@@ -63,17 +62,20 @@
   .tv-createbtn:hover {
     background-color: #D2691E    ;
   }
-  .tv-exportbtn {
+  .tv-exportcsvbtn, .tv-exportxlsxbtn {
     background-color: #BF40BF    ;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     padding: .5rem .75rem;
-    max-width: 140px;
+    width: 140px;
     margin-right: .5rem;
     font-size: 14px;
     transition: background-color 0.2s ease-in-out;
+  }
+  .tv-exportxlsxbtn {
+    margin-right: 0px;
   }
   .tv-exportbtn:hover {
     background-color: #702963    ;
@@ -122,15 +124,24 @@
   .tv-body-filter {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
   .tv-body-maintenance {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
     padding-bottom:.5rem; 
+    width: 100%;
   }
   .tv-body-upload {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
   .tv-heading {
     display: flex;
@@ -139,6 +150,7 @@
   }
   .tv-action-search {
     margin: .5rem .75rem;
+    
   }
   .tv-action-create {
     display: flex;
@@ -165,7 +177,6 @@
     border-radius: 4px;
     cursor: pointer;
     padding: .5rem .75rem;
-    margin-right: 8px;
     min-width: 4rem;
     font-size: 14px;
     height: 16px;
@@ -205,7 +216,6 @@
   }
   
  .tv-action-sort {
-    margin-left: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -227,5 +237,6 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    width: auto;
   }
   

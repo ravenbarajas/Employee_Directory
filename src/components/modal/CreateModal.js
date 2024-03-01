@@ -3,6 +3,9 @@ import '../css/CreateModal.css'; // Import the stylesheet
 
 const CreateModal = ({ onClose, onEmployeeCreated }) => {
   const [newEmployeeData, setNewEmployeeData] = useState({
+    empUsername: '',
+    empPass: '',
+    empName: '',
     empName: '',
     empBday: '', // Employee Birthday (date picker)
     empDeptID: '', // Department ID field (manual input)
@@ -28,13 +31,58 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
 
   const [departmentList, setDepartmentList] = useState(departmentListDD);
 
+  const generateRandomPassword = () => {
+    const getRandomChar = (characters) =>
+        characters[Math.floor(Math.random() * characters.length)];
+
+    const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+    const numericChars = '0123456789';
+    const specialChars = '!@#$%^&*+#';
+    const minLength = 8;
+    
+    const randomPassword =
+        getRandomChar(uppercaseChars) +
+        getRandomChar(lowercaseChars) +
+        getRandomChar(numericChars) +
+        getRandomChar(specialChars) +
+        Array.from({ length: minLength - 4 }, () => getRandomChar(uppercaseChars + lowercaseChars + numericChars + specialChars))
+            .join('');
+
+    return randomPassword;
+};
+
+  // Function to generate empID based on the existing logic
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployeeData((prevData) => ({
-      ...prevData,
-      [name]: value,
+        ...prevData,
+        [name]: value,
     }));
-  };
+
+    // Check if the changed field is empName
+    if (name === 'empName' && value.trim() !== '') {
+        // Extract first name and last name
+        const nameParts = value.split(' ');
+        const firstNameInitial = nameParts[0].charAt(0);
+        const lastName = nameParts.length > 2 ? nameParts[nameParts.length - 2] : nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+        const suffix = nameParts.length > 2 ? nameParts[nameParts.length - 1] : '';
+
+        // Remove spaces and generate empUsername
+        const empUsername = `${firstNameInitial.toLowerCase()}${lastName.replace(/\s/g, '').toLowerCase()}${suffix.replace(/\s/g, '').toLowerCase()}@viva.com.ph`;
+
+        // Generate empPass
+        const empPass = generateRandomPassword();
+
+        // Update the state with the generated values
+        setNewEmployeeData((prevData) => ({
+            ...prevData,
+            empUsername: empUsername,
+            empPass: empPass,
+        }));
+    }
+};
 
   const handleDepartmentChange = (e) => {
     const selectedDepartment = departmentList.find((dept) => dept.deptName === e.target.value);
@@ -101,6 +149,22 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
         </div>
       </div>
       <form>
+      <label>Username: </label>
+        <input
+          type="text"
+          name="empUsername"
+          value={newEmployeeData.empUsername}
+          onChange={handleInputChange}
+        />
+
+        <label>Password: </label>
+        <input
+          type="text"
+          name="empPass"
+          value={newEmployeeData.empPass}
+          onChange={handleInputChange}
+        />
+
         <label>Name: </label>
         <input
           type="text"
