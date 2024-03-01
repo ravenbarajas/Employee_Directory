@@ -20,6 +20,18 @@ class EmployeeController extends Controller
         $employees = Employee::all();
         return response()->json(EmployeeResource::collection($employees));
     }
+    public function login(Request $request)
+    {
+        $credentials = $request->only('empUsername', 'empPass');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            $user = Auth::user();
+            return response()->json($user);
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
     public function store(Request $request)
     {
             // Retrieve the maximum empID from the database
