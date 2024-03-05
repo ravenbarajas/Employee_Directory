@@ -32,5 +32,4 @@ Route::middleware(['api'])->group(function () {
 
     // Use the store method for saving table data
     Route::post('/employees/store', [EmployeeController::class, 'store']); // Updated this line
-
 });

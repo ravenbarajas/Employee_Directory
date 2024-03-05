@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Imports\EmployeeImport;
 use App\Models\Employee;
 use ExcelJS\Excel;
-use Illuminate\Support\Facades\Auth;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Http\Resources\EmployeeResource;
 use Illuminate\Support\Facades\Validator;
@@ -20,53 +18,38 @@ class EmployeeController extends Controller
         $employees = Employee::all();
         return response()->json(EmployeeResource::collection($employees));
     }
-    public function login(Request $request)
-    {
-        $credentials = $request->only('empUsername', 'empPass');
 
-        if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            $user = Auth::user();
-            return response()->json($user);
-        }
-
-        return response()->json(['error' => 'Unauthorized'], 401);
-    }
     public function store(Request $request)
     {
-            // Retrieve the maximum empID from the database
-            $maxId = Employee::max('empID');
-            
-            // Increment by 1 for the new employee
-            $newEmpId = $maxId + 1;
+        // Retrieve the maximum empID from the database
+        $maxId = Employee::max('empID');
+        
+        // Increment by 1 for the new employee
+        $newEmpId = $maxId + 1;
 
-            // Validate and store the request data
-            $request->validate([
-                'empName' => 'required|string',
-                'empBday' => 'required|date',
-                'empDeptID' => 'required|integer',
-                'empDept' => 'required|string',
-                'empSalary' => 'required|numeric',
-                // ... other validation rules for other fields
-            ]);
+        // Validate and store the request data
+        $request->validate([
+            'empName' => 'required|string',
+            'empBday' => 'required|date',
+            'empDeptID' => 'required|integer',
+            'empDept' => 'required|string',
+            'empSalary' => 'required|numeric',
+            // ... other validation rules for other fields
+        ]);
 
-            // Encrypt the password using bcrypt
-            $empPass = bcrypt($request->input('empPass'));
+        $employee = Employee::create([
+            'empID' => $newEmpId,
+            'empName' => $request->input('empName'),
+            'empBday' => $request->input('empBday'),
+            'empDeptID' => $request->input('empDeptID'),
+            'empDept' => $request->input('empDept'),
+            'empSalary' => $request->input('empSalary'),
+            // ... other fields
+        ]);
 
-            $employee = Employee::create([
-                'empID' => $newEmpId,
-                'empUsername' => $request->input('empUsername'),
-                'empPass' => $empPass,
-                'empName' => $request->input('empName'),
-                'empBday' => $request->input('empBday'),
-                'empDeptID' => $request->input('empDeptID'),
-                'empDept' => $request->input('empDept'),
-                'empSalary' => $request->input('empSalary'),
-                // ... other fields
-            ]);
-
-            return new EmployeeResource($employee);
+        return new EmployeeResource($employee);
     }
+
     public function show($id)
     {
         $employee = Employee::findOrFail($id);
