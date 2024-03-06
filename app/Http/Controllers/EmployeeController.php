@@ -55,7 +55,6 @@ class EmployeeController extends Controller
         $employee = Employee::findOrFail($id);
         return response()->json(new EmployeeResource($employee));
     }
-
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -77,14 +76,12 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'Employee not found'], 404);
         }
     }
-
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);
         $employee->delete();
         return response()->json(null, 204);
     }
-
     public function upload(Request $request)
     {
         try {
@@ -114,7 +111,6 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'File upload failed'], 500);
         }
     }
-
     public function save(Request $request)
     {
         try {
