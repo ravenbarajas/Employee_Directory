@@ -303,46 +303,116 @@ const TableView = () => {
   };
 
   const exportToCSV = () => {
-    const sortedData = [...filteredTableData].sort((a, b) => {
-      const aValue = String(a[sortColumn]);
-      const bValue = String(b[sortColumn]);
+    // Filter the entire dataset based on the search term
+    const filteredData = sortedData
+      .filter((row) => {
+        const isMatchingDeptID =
+          row['empDeptID'] && row['empDeptID'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+        const isMatchingDeptName =
+          row['empDept'] && row['empDept'].toString().toLowerCase().includes(searchTerm.toLowerCase());
   
-      if (sortOrder === 'asc') {
-        return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
-      } else {
-        return bValue.localeCompare(aValue, undefined, { numeric: true, sensitivity: 'base' });
-      }
-    });
+        return (
+          Object.values(row).some(
+            (cell) =>
+              cell !== undefined &&
+              cell !== null &&
+              cell !== '' &&
+              (sortOption === '' ||
+                ((sortOption === 'empDeptID' || sortOption === 'empDept') &&
+                  (isMatchingDeptID || isMatchingDeptName)) ||
+                (sortOption === 'empID' &&
+                  row['empID'] &&
+                  row['empID'].toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (row[sortOption] !== undefined &&
+                  row[sortOption] !== null &&
+                  row[sortOption].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+              )
+          )
+        );
+      })
+      .sort((a, b) => {
+        if (sortOption === 'empName') {
+          return a[sortOption].localeCompare(b[sortOption]);
+        } else if (sortOption === 'empDeptID') {
+          const deptIDA = a[sortOption] || 0;
+          const deptIDB = b[sortOption] || 0;
+          if (deptIDA === deptIDB) {
+            return (a['empDept'] || '').localeCompare(b['empDept'] || '');
+          }
+          return deptIDA - deptIDB;
+        } else if (sortOption === 'empID') {
+          return a[sortOption] - b[sortOption];
+        }
+        return 0;
+      });
   
     const csvData = [headers.join(',')]; // Include headers in CSV
   
-    sortedData.forEach((row) => {
-      const rowData = headers.map((header) => String(row[header]));
+    filteredData.forEach((row) => {
+      const rowData = headers.map((header) => {
+        if (header === 'empDept' && row['empDeptID']) {
+          // Combine empDeptID and empDept for 'Department' sorting
+          return `${row['empDept']}`;
+        }
+        return String(row[header]);
+      });
       csvData.push(Object.values(rowData).join(','));
     });
   
     const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8' });
     FileSaver.saveAs(blob, 'employee_data.csv');
-  };
-  
+  };  
+
   const exportToXLSX = () => {
-    const sortedData = [...filteredTableData].sort((a, b) => {
-      const aValue = String(a[sortColumn]);
-      const bValue = String(b[sortColumn]);
+    // Filter the entire dataset based on the search term
+    const filteredData = sortedData
+      .filter((row) => {
+        const isMatchingDeptID =
+          row['empDeptID'] && row['empDeptID'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+        const isMatchingDeptName =
+          row['empDept'] && row['empDept'].toString().toLowerCase().includes(searchTerm.toLowerCase());
   
-      if (sortOrder === 'asc') {
-        return aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
-      } else {
-        return bValue.localeCompare(aValue, undefined, { numeric: true, sensitivity: 'base' });
-      }
-    });
+        return (
+          Object.values(row).some(
+            (cell) =>
+              cell !== undefined &&
+              cell !== null &&
+              cell !== '' &&
+              (sortOption === '' ||
+                ((sortOption === 'empDeptID' || sortOption === 'empDept') &&
+                  (isMatchingDeptID || isMatchingDeptName)) ||
+                (sortOption === 'empID' &&
+                  row['empID'] &&
+                  row['empID'].toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (row[sortOption] !== undefined &&
+                  row[sortOption] !== null &&
+                  row[sortOption].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+              )
+          )
+        );
+      })
+      .sort((a, b) => {
+        if (sortOption === 'empName') {
+          return a[sortOption].localeCompare(b[sortOption]);
+        } else if (sortOption === 'empDeptID') {
+          const deptIDA = a[sortOption] || 0;
+          const deptIDB = b[sortOption] || 0;
+          if (deptIDA === deptIDB) {
+            return (a['empDept'] || '').localeCompare(b['empDept'] || '');
+          }
+          return deptIDA - deptIDB;
+        } else if (sortOption === 'empID') {
+          return a[sortOption] - b[sortOption];
+        }
+        return 0;
+      });
   
-    const ws = XLSX.utils.json_to_sheet(sortedData, { header: headers });
+    const ws = XLSX.utils.json_to_sheet(filteredData, { header: headers });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     XLSX.writeFile(wb, 'employee_data.xlsx');
   };
-
+  
   // Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -355,42 +425,53 @@ const TableView = () => {
   const renderTableRows = () => {
     // Filter the entire dataset based on the search term
     const filteredData = sortedData
-  .filter((row) => {
-    const isMatchingDeptID = row['empDeptID'] && row['empDeptID'].toString().toLowerCase().includes(searchTerm.toLowerCase());
-    const isMatchingDeptName =
-      row['empDeptName'] && row['empDeptName'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+    .filter((row) => {
+      const isMatchingDeptID =
+        row['empDeptID'] && row['empDeptID'].toString().toLowerCase().includes(searchTerm.toLowerCase());
+      const isMatchingDeptName =
+        row['empDept'] && row['empDept'].toString().toLowerCase().includes(searchTerm.toLowerCase());
 
-    return (
-      Object.values(row).some(
-        (cell) =>
-          cell !== undefined &&
-          cell !== null &&
-          cell !== '' &&
-          (sortOption === '' ||
-            ((sortOption === 'empDeptID' || sortOption === 'empDeptName') &&
-              (isMatchingDeptID || isMatchingDeptName)) ||
-            (sortOption === 'empID' && row['empID'] && row['empID'].toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (row[sortOption] !== undefined &&
-              row[sortOption] !== null &&
-              row[sortOption].toString().toLowerCase().includes(searchTerm.toLowerCase()))
-          )
-      )
-    );
-  })
-  .sort((a, b) => {
-    if (sortOption === 'empName') {
-      // Sort alphabetically by empName
-      return a[sortOption].localeCompare(b[sortOption]);
-    } else if (sortOption === 'empDeptID') {
-      // Sort by empDeptID (assuming it's a numerical value)
-      return a[sortOption] - b[sortOption];
-    } else if (sortOption === 'empID') {
-      // Sort by empID (assuming it's a numerical value)
-      return a[sortOption] - b[sortOption];
-    }
-    // Add more sorting options as needed
-    return 0;
-  });
+      return (
+        Object.values(row).some(
+          (cell) =>
+            cell !== undefined &&
+            cell !== null &&
+            cell !== '' &&
+            (sortOption === '' ||
+              ((sortOption === 'empDeptID' || sortOption === 'empDept') &&
+                (isMatchingDeptID || isMatchingDeptName)) ||
+              (sortOption === 'empID' &&
+                row['empID'] &&
+                row['empID'].toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+              (row[sortOption] !== undefined &&
+                row[sortOption] !== null &&
+                row[sortOption].toString().toLowerCase().includes(searchTerm.toLowerCase()))
+            )
+        )
+      );
+    })
+    .sort((a, b) => {
+      if (sortOption === 'empName') {
+        // Sort alphabetically by empName
+        return a[sortOption].localeCompare(b[sortOption]);
+      } else if (sortOption === 'empDeptID') {
+        // Sort by empDeptID (assuming it's a numerical value)
+        const deptIDA = a[sortOption] || 0; // Default to 0 if empDeptID is undefined or null
+        const deptIDB = b[sortOption] || 0; // Default to 0 if empDeptID is undefined or null
+
+        if (deptIDA === deptIDB) {
+          // If empDeptID is equal, then sort by empDept if defined
+          return (a['empDept'] || '').localeCompare(b['empDept'] || '');
+        }
+        return deptIDA - deptIDB;
+      } else if (sortOption === 'empID') {
+        // Sort by empID (assuming it's a numerical value)
+        return a[sortOption] - b[sortOption];
+      }
+      // Add more sorting options as needed
+      return 0;
+    });
+
     // Apply pagination to the filtered data
     const paginatedData = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
