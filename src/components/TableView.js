@@ -215,11 +215,7 @@ const TableView = () => {
         const formattedData = dataRows.map((row) =>
           sheetHeaders.reduce((obj, key, index) => {
             if (key === 'empSalary') {
-              // Check if the value is a string before applying replace
-              obj[key] =
-                typeof row[index] === 'string'
-                  ? parseFloat(row[index].replace(/,/g, '')).toFixed(2)
-                  : row[index];
+              
             } else if (key === 'empBday') {
               obj[key] = parseDate(row[index]);
             } else {
@@ -529,11 +525,6 @@ const TableView = () => {
             </div>
           </div>
 <         div className='tv-body-maintenance'>
-            <div className='tv-action-create'>
-                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
-                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add Employee
-                </button>
-            </div>
             <div className='tv-action-export'>
               <button className="tv-exportcsvbtn" onClick={exportToCSV}>
               <i class="fa-solid fa-file-csv"></i>&nbsp;&nbsp;Export to CSV
@@ -544,9 +535,14 @@ const TableView = () => {
             </div>
           </div>
           <div className='tv-body-upload'>
+            <div className='tv-action-create'>
+                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
+                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add Employee
+                </button>
+            </div>
             <div className='tv-action-upload custom-file-container'>
                 <label htmlFor="fileInput" className="custom-file-button">
-                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Choose File
+                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Import Data
                 </label>
                 <input type="file" id="fileInput" onChange={handleFileChange} />
                 {fileUploaded && (

@@ -10,7 +10,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
     empBday: '', // Employee Birthday (date picker)
     empDeptID: '', // Department ID field (manual input)
     empDept: '', // Department Name (dropdown)
-    empSalary: '', // Salary field (manual input)
     // Add other fields as needed
   });
 
@@ -157,13 +156,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
             </option>
           ))}
         </select>
-        <label>Salary: </label>
-        <input
-          type="text"
-          name="empSalary"
-          value={newEmployeeData.empSalary}
-          onChange={handleInputChange}
-        />
         {/* Add other fields as needed */}
       </form>
       <div className="cm-form-action">

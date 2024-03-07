@@ -18,7 +18,6 @@ const DetailsModal = ({ employee, onClose }) => {
         <p><strong>Birthday:</strong> {employee.empBday}</p>
         <p><strong>Department ID:</strong> {employee.empDeptID}</p>
         <p><strong>Department:</strong> {employee.empDept}</p>
-        <p><strong>Salary:</strong> {employee.empSalary}</p>
       </div>
     </div>
   );

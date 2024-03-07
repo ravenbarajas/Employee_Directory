@@ -101,14 +101,6 @@ const EditModal = ({ employee, onClose, onUpdate }) => {
           readOnly
         />
 
-        <label>Salary: </label>
-        <input
-          type="text"
-          name="empSalary"
-          value={updatedEmployeeData.empSalary}
-          onChange={handleInputChange}
-        />
-
         {/* Add other fields as needed */}
       </form>
       <div className='em-form-action'>
