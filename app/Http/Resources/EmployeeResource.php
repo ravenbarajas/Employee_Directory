@@ -14,7 +14,6 @@ class EmployeeResource extends JsonResource
             'empBday' => $this->empBday,
             'empDeptID' => $this->empDeptID,
             'empDept' => $this->empDept,
-            'empSalary' => $this->empSalary,
             // Add more fields as needed
         ];
     }

@@ -22,7 +22,6 @@ class Employee extends Model implements \Illuminate\Contracts\Auth\Authenticatab
         'empBday',
         'empDeptID',
         'empDept',
-        'empSalary',
         // Add more columns as needed
     ];
     // Make sure 'empID' is auto-incrementing

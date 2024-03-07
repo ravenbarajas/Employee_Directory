@@ -33,7 +33,6 @@ class EmployeeController extends Controller
             'empBday' => 'required|date',
             'empDeptID' => 'required|integer',
             'empDept' => 'required|string',
-            'empSalary' => 'required|numeric',
             // ... other validation rules for other fields
         ]);
 
@@ -43,7 +42,6 @@ class EmployeeController extends Controller
             'empBday' => $request->input('empBday'),
             'empDeptID' => $request->input('empDeptID'),
             'empDept' => $request->input('empDept'),
-            'empSalary' => $request->input('empSalary'),
             // ... other fields
         ]);
 
@@ -63,7 +61,6 @@ class EmployeeController extends Controller
             'empBday' => 'date',
             'empDeptID' => 'integer',
             'empDept' => 'string',
-            'empSalary' => 'numeric',
             // Add more validation rules for other columns as needed
         ]);
 
@@ -127,7 +124,6 @@ class EmployeeController extends Controller
                     'empBday' => 'required|date_format:Y-m-d',
                     'empDeptID' => 'required|integer',
                     'empDept' => 'required|string',
-                    'empSalary' => 'required|numeric',
                     // Add more validation rules for other columns as needed
                 ]);
 
@@ -146,7 +142,6 @@ class EmployeeController extends Controller
                     'empBday' => $rowData['empBday'],
                     'empDeptID' => $rowData['empDeptID'],
                     'empDept' => $rowData['empDept'],
-                    'empSalary' => $rowData['empSalary'],
                     // Add more fields as needed
                 ]);
             }

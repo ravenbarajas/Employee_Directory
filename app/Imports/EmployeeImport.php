@@ -20,7 +20,6 @@ class EmployeeImport implements ToModel
         $empBday = $row['empBday']['date'] ?? null;
         $empDeptID = $row['empDeptID'] ?? null;
         $empDept = $row['empDept'] ?? null;
-        $empSalary = $row['empSalary'] ?? null;
 
         // Check if an employee with the same empID already exists
         $existingEmployee = Employee::find($empID);
@@ -33,7 +32,6 @@ class EmployeeImport implements ToModel
                 'empBday' => $empBday,
                 'empDeptID' => $empDeptID,
                 'empDept' => $empDept,
-                'empSalary' => $empSalary,
                 // Add more columns as needed
             ]);
         } else {
