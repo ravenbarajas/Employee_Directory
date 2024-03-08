@@ -239,4 +239,24 @@
     box-sizing: border-box;
     width: auto;
   }
+  /* ColumnVisibilityDropdown.css */
+.column-group {
+  margin-right: 20px;
+}
+.group-label {
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.checkbox-container {
+  margin-bottom: 5px;
+}
+.checkbox-label {
+  margin-left: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.group-container {
+  display: flex;
+  padding-top: 25px;
+}
+
   

@@ -13,8 +13,10 @@ import DetailsModal from './modal/DetailsModal.js'; // Import the DetailsModal c
 import ExportModal from './modal/ExportModal.js'; // Import the ExportModal component
 import { saveAs } from 'file-saver';
 import * as FileSaver from 'file-saver';
+import Dropdown from 'react-dropdown-select';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
+
 
 const TableView = () => {
   const [headers, setHeaders] = useState([]);
@@ -33,7 +35,127 @@ const TableView = () => {
   const [sortOrder, setSortOrder] = useState('asc'); // or 'desc' for descending
   const [sortColumn, setSortColumn] = useState('empName'); // set to the column you want to be initially sorted
   const [exportFormat, setExportFormat] = useState('');
+  const [sheetHeaders, setSheetHeaders] = useState([]);
+  const [visibleColumns, setVisibleColumns] = useState(sheetHeaders); // Initialize with all columns
+  
+  const ColumnVisibilityDropdown = ({ columns, visibility, onChange }) => {
+    const columnMapping = {
+      empID: 'Employee ID',
+      empName: 'Employee Name',
+      empBday: 'Date of Birth',
+      empGender: 'Gender',
+      empPhonenum: 'Phone Number',
+      empEmail: 'Email',
+      empMaritalstatus: 'Marital Status',
+      empNationality: 'Nationality',
+      empReligion: 'Religion',
+      empDeptID: 'Department ID',
+      empDept: 'Department',
+      empPosition: 'Position',
+      empDateofhire: 'Date of Hire',
+      empTinID: 'TIN ID',
+      empHdmfID: 'HDMF ID',
+      empPhilhealthID: 'PhilHealth ID',
+      empSssID: 'SSS ID',
+      empEMRGNCname: 'Emergency Contact Name',
+      empEMRGNCrelationship: 'Emergency Contact Relationship',
+      empEMRGNCphonenum: 'Emergency Contact Phone Number',
+    };
+    const handleCheckboxChange = (column) => {
+      const updatedVisibility = { ...visibility, [column]: !visibility[column] };
+      onChange(updatedVisibility);
+    };
+    const handleGroupCheckboxChange = (groupColumns, checked) => {
+      const updatedVisibility = { ...visibility };
+      groupColumns.forEach((column) => {
+        updatedVisibility[column] = checked;
+      });
+      onChange(updatedVisibility);
+    };
+  
+    const renderGroup = (groupName, groupColumns) => (
+      <div key={groupName} className="column-group">
+        <label className="group-label">
+          <input
+            type="checkbox"
+            checked={groupColumns.every((column) => visibility[column])}
+            onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
+          />
+          {groupName}&nbsp;
+        </label>
+        {groupColumns.map((column) => (
+          <div key={column} className="checkbox-container">
+            <input
+              type="checkbox"
+              id={column}
+              checked={visibility[column]}
+              onChange={() => handleCheckboxChange(column)}
+            />
+            <label htmlFor={column} className="checkbox-label">
+              {columnMapping[column]}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  
+    return (
+      <div>
+        <div className="group-container">
+          {renderGroup('Personal Information', ['empID', 'empName', 'empBday', 'empGender'])}
+          {renderGroup('', ['empMaritalstatus', 'empNationality', 'empReligion'])}
+          {renderGroup('Contact Information', ['empPhonenum', 'empEmail'])}
+          {renderGroup('Work Profile', ['empDeptID', 'empDept', 'empPosition', 'empDateofhire'])}
+          {renderGroup('Government IDs', ['empTinID', 'empHdmfID', 'empPhilhealthID', 'empSssID'])}
+          {renderGroup('Emergency Contact', ['empEMRGNCname', 'empEMRGNCrelationship', 'empEMRGNCphonenum'])}
+          {/* Add more groups as needed */}
+        </div>
+      </div>
+    );
+  };
 
+  const [columnVisibility, setColumnVisibility] = useState({
+    empID: true,
+    empName: true,
+    empDeptID: true,
+    empDept: true,
+    empPosition: true,
+    // ... other columns with initial visibility
+  });
+
+  const [selectedColumns, setSelectedColumns] = useState([]);
+  
+  const columnMapping = {
+    empID: 'Employee ID',
+    empName: 'Employee Name',
+    empBday: 'Date of Birth',
+    empGender: 'Gender',
+    empPhonenum: 'Phone Number',
+    empEmail: 'Email',
+    empMaritalstatus: 'Marital Status',
+    empNationality: 'Nationality',
+    empReligion: 'Religion',
+    empDeptID: 'Department ID',
+    empDept: 'Department',
+    empPosition: 'Position',
+    empDateofhire: 'Date of Hire',
+    empTinID: 'TIN ID',
+    empHdmfID: 'HDMF ID',
+    empPhilhealthID: 'PhilHealth ID',
+    empSssID: 'SSS ID',
+    empEMRGNCname: 'Emergency Contact Name',
+    empEMRGNCrelationship: 'Emergency Contact Relationship',
+    empEMRGNCphonenum: 'Emergency Contact Phone Number',
+  };
+  const renderTableHeaders = () => (
+    <tr>
+      {Object.keys(columnMapping).map((header) => (
+        columnVisibility[header] && <th key={header}>{columnMapping[header]}</th>
+      ))}
+      <th>Actions</th>
+    </tr>
+  );
+  
   useEffect(() => {
     // Fetch employees from API
     axios.get('http://localhost:8000/api/employees')
@@ -106,6 +228,23 @@ const TableView = () => {
     const year = parsedDate.getFullYear();
   
     return `${year}-${month}-${day}`;
+  };
+  const parsePhoneNumber = (phoneNumber) => {
+    if (!phoneNumber) {
+      // Handle empty or undefined dates
+      return null;
+    }
+    // Ensure phoneNumber is treated as a string
+    const phoneNumberString = String(phoneNumber);
+  
+    // Assuming the phone number format is "639212806805"
+    // You may need to adjust this based on your actual phone number format
+    const countryCode = phoneNumberString.slice(0, 2);
+    const areaCode = phoneNumberString.slice(2, 5);
+    const subscriberNumber = phoneNumberString.slice(5);
+  
+    // Format the phone number as per your requirements
+    return `+${countryCode} (${areaCode}) ${subscriberNumber}`;
   };
   
   const handleSave = async () => {
@@ -215,16 +354,19 @@ const TableView = () => {
         const formattedData = dataRows.map((row) =>
           sheetHeaders.reduce((obj, key, index) => {
             if (key === 'empSalary') {
-              
-            } else if (key === 'empBday') {
+              // Handle empSalary
+            } else if (key === 'empBday' || key === 'empDateofhire') {
               obj[key] = parseDate(row[index]);
+            } else if (key === 'empPhonenum' || key === 'empEMRGNCphonenum') {
+              // Assuming parsePhoneNumber is a function to format phone numbers
+              obj[key] = parsePhoneNumber(row[index]);
             } else {
               obj[key] = row[index];
             }
             return obj;
           }, {})
         );
-  
+
         setHeaders(sheetHeaders);
   
         const nonEmptyRows = formattedData.filter((row) =>
@@ -473,9 +615,9 @@ const TableView = () => {
 
     return paginatedData.map((row, index) => (
       <tr key={index} onClick={() => handleDetails(row)}>
-        {headers.map((header) => (
-          <td key={header}>{row[header]}</td>
-        ))}
+      {headers.map((header) => (
+        columnVisibility[header] && <td key={header}>{row[header]}</td>
+      ))}
         <td>
           <button className="tv-editbtn" onClick={(e) => { e.stopPropagation(); handleEdit(row) }}>
             Edit
@@ -487,6 +629,23 @@ const TableView = () => {
       </tr>
     ));
   };
+
+  const renderColumnDropdown = () => (
+    <div>
+      <label>Select Columns:</label>
+      <select
+        multiple
+        value={selectedColumns}
+        onChange={(e) => setSelectedColumns(Array.from(e.target.selectedOptions, (option) => option.value))}
+      >
+        {headers.map((header) => (
+          <option key={header} value={header}>
+            {columnMapping[header]}
+          </option>
+        ))}
+      </select>
+    </div>
+  );  
 
   return (
     <div className="table-container">
@@ -557,16 +716,15 @@ const TableView = () => {
           </div>
         </div>
       </div>
-  
+      <ColumnVisibilityDropdown
+        columns={Object.keys(columnMapping)}
+        visibility={columnVisibility}
+        onChange={setColumnVisibility}
+      />
       {tableData.length > 0 && (
         <table className="styled-table">
           <thead>
-            <tr>
-              {headers.map((header) => (
-                <th key={header}>{header}</th>
-              ))}
-              <th>Actions</th>
-            </tr>
+            {renderTableHeaders()}
           </thead>
           <tbody>{renderTableRows()}</tbody>
         </table>

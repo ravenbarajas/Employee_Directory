@@ -15,7 +15,7 @@
     padding: 20px;
     border-radius: 8px;
     width: 50%; /* Adjust the width as needed */
-    max-width: 500px; /* Set a maximum width if desired */
+    max-width: 650px; /* Set a maximum width if desired */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
@@ -45,11 +45,57 @@
   .dm-header-close i:hover{
     color: #FF0000;
   }
-  
+  .dm-content {
+    display: flex;
+    flex-direction: column;
+  }
   .dm-content p {
     margin: 0 0 10px;
   }
-  
+  .dm-content-1strow {
+    display: flex;
+    flex-direction: row;
+    padding: .25rem;
+    margin: .5rem;
+    border: 1px solid #000;
+    border-radius: .25rem;
+  }
+  .dm-content-1strow-1stcol {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .dm-content-1strow-2ndcol {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .dm-content-2ndrow {
+    display: flex;
+    flex-direction: row;
+    padding: .25rem;
+    margin: .5rem;
+    border: 1px solid #000;
+    border-radius: .25rem;
+  }
+  .dm-content-2ndrow-1stcol {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .dm-content-2ndrow-2ndcol {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .dm-content-3rdrow {
+    display: flex;
+    flex-direction: column;
+    padding: .25rem;
+    margin: .5rem;
+    border: 1px solid #000;
+    border-radius: .25rem;
+  }
   
   /* Add more styles as needed */
   

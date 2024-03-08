@@ -6,7 +6,6 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
     empUsername: '',
     empPass: '',
     empName: '',
-    empName: '',
     empBday: '', // Employee Birthday (date picker)
     empDeptID: '', // Department ID field (manual input)
     empDept: '', // Department Name (dropdown)
