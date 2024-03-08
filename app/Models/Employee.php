@@ -16,12 +16,25 @@ class Employee extends Model implements \Illuminate\Contracts\Auth\Authenticatab
     protected $primaryKey = 'empID'; // Update the primary key
 
     protected $fillable = [
-        'empUsername',
-        'empPass',
         'empName',
         'empBday',
+        'empGender',
+        'empPhonenum',
+        'empEmail',
+        'empMaritalstatus',  
+        'empNationality',
+        'empReligion',
         'empDeptID',
         'empDept',
+        'empPosition',
+        'empDateofhire',
+        'empTinID',
+        'empHdmfID',
+        'empPhilhealthID',
+        'empSssID',
+        'empEMRGNCname',
+        'empEMRGNCrelationship',
+        'empEMRGNCphonenum',
         // Add more columns as needed
     ];
     // Make sure 'empID' is auto-incrementing

@@ -18,8 +18,23 @@ class EmployeeImport implements ToModel
         $empID = $row['empID'] ?? null; // Assuming 'empID' is the primary key
         $empName = $row['empName'] ?? null;
         $empBday = $row['empBday']['date'] ?? null;
+        $empGender = $row['empGender'] ?? null;
+        $empPhonenum = $row['empPhonenum'] ?? null;
+        $empEmail = $row['empEmail'] ?? null;
+        $empMaritalstatus = $row['empMaritalstatus'] ?? null;
+        $empNationality = $row['empNationality'] ?? null;
+        $empReligion = $row['empReligion'] ?? null;
         $empDeptID = $row['empDeptID'] ?? null;
         $empDept = $row['empDept'] ?? null;
+        $empPosition = $row['empPosition'] ?? null;
+        $empDateofhire = $row['empDateofhire']['date'] ?? null;
+        $empTinID = $row['empTinID'] ?? null;
+        $empHdmfID = $row['empHdmfID'] ?? null;
+        $empPhilhealthID = $row['empPhilhealthID'] ?? null;
+        $empSssID = $row['empSssID'] ?? null;
+        $empEMRGNCname = $row['empEMRGNCname'] ?? null;
+        $empEMRGNCrelationship = $row['empEMRGNCrelationship'] ?? null;
+        $empEMRGNCphonenum = $row['empEMRGNCphonenum'] ?? null;
 
         // Check if an employee with the same empID already exists
         $existingEmployee = Employee::find($empID);
@@ -30,8 +45,24 @@ class EmployeeImport implements ToModel
                 'empID' => $empID, // Assuming 'empID' is the primary key
                 'empName' => $empName,
                 'empBday' => $empBday,
+                'empGender' => $empGender,
+                'empPhonenum' => $empPhonenum,
+                'empEmail' => $empEmail,
+                'empMaritalstatus' => $empMaritalstatus,
+                'empNationality' => $empNationality,
+                'empReligion' => $empReligion,
                 'empDeptID' => $empDeptID,
                 'empDept' => $empDept,
+                'empPosition' => $empPosition,
+                'empDateofhire' => $empDateofhire,
+                'empTinID' => $empTinID,
+                'empHdmfID' => $empHdmfID,
+                'empPhilhealthID' => $empPhilhealthID,
+                'empSssID' => $empSssID,
+                'empEMRGNCname' => $empEMRGNCname,
+                'empEMRGNCrelationship' => $empEMRGNCrelationship,
+                'empEMRGNCphonenum' => $empEMRGNCphonenum,
+                
                 // Add more columns as needed
             ]);
         } else {
