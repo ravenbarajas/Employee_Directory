@@ -23,17 +23,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    margin: .5rem;
   }
   
   .dm-header-title h2 {
     font-size: 24px;
-    margin-bottom: 20px;
+    padding: .5rem;
   }
   
   .dm-header-close {
-    background-color: transparent;
+    background-color: transparent; 
     display: flex;
     justify-content: end;
     align-items: center;
@@ -52,28 +51,41 @@
   .dm-content p {
     margin: 0 0 10px;
   }
+  .employee-profilepic{
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
+  .employee-profilepic img{
+    width: 6rem;
+    height: auto;
+  }
   .dm-content-1strow {
     display: flex;
     flex-direction: row;
-    padding: .25rem;
+    padding: .5rem;
     margin: .5rem;
-    border: 1px solid #000;
-    border-radius: .25rem;
   }
   .dm-content-1strow-1stcol {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 20%;
   }
   .dm-content-1strow-2ndcol {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 40%;
+  }
+  .dm-content-1strow-3rdcol {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
   }
   .dm-content-2ndrow {
     display: flex;
     flex-direction: row;
-    padding: .25rem;
+    padding: .5rem;
     margin: .5rem;
     border: 1px solid #000;
     border-radius: .25rem;
@@ -90,8 +102,26 @@
   }
   .dm-content-3rdrow {
     display: flex;
+    flex-direction: row;
+    padding: .5rem;
+    margin: .5rem;
+    border: 1px solid #000;
+    border-radius: .25rem;
+  }
+  .dm-content-3rdrow-1stcol {
+    display: flex;
     flex-direction: column;
-    padding: .25rem;
+    width: 50%;
+  }
+  .dm-content-3rdrow-2ndcol {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .dm-content-4throw {
+    display: flex;
+    flex-direction: column;
+    padding: .5rem;
     margin: .5rem;
     border: 1px solid #000;
     border-radius: .25rem;
