@@ -38,6 +38,86 @@ const TableView = () => {
   const [sheetHeaders, setSheetHeaders] = useState([]);
   const [visibleColumns, setVisibleColumns] = useState(sheetHeaders); // Initialize with all columns
 
+  const ColumnVisibilityDropdown = ({ columns, visibility, onChange }) => {
+    const columnMapping = {
+      empID: 'Employee ID',
+      empName: 'Employee Name',
+      empBday: 'Date of Birth',
+      empGender: 'Gender',
+      empPhonenum: 'Phone Number',
+      empEmail: 'Email',
+      empHomeaddress: 'Home Address',
+      empMaritalstatus: 'Marital Status',
+      empNationality: 'Nationality',
+      empReligion: 'Religion',
+      empStatus: 'Employment Status',
+      empCompany: 'Company',
+      empCompanyaddress: 'Company Address',
+      empDeptID: 'Department ID',
+      empDept: 'Department',
+      empPosition: 'Position',
+      empDateofhire: 'Date of Hire',
+      empTinID: 'TIN ID',
+      empHdmfID: 'HDMF ID',
+      empPhilhealthID: 'PhilHealth ID',
+      empSssID: 'SSS ID',
+      empEMRGNCname: 'Emergency Contact Name',
+      empEMRGNCrelationship: 'Emergency Contact Relationship',
+      empEMRGNCphonenum: 'Emergency Contact Phone Number',
+    };
+    const handleCheckboxChange = (column) => {
+      const updatedVisibility = { ...visibility, [column]: !visibility[column] };
+      onChange(updatedVisibility);
+    };
+    const handleGroupCheckboxChange = (groupColumns, checked) => {
+      const updatedVisibility = { ...visibility };
+      groupColumns.forEach((column) => {
+        updatedVisibility[column] = checked;
+      });
+      onChange(updatedVisibility);
+    };
+  
+    const renderGroup = (groupName, groupColumns) => (
+      <div key={groupName} className="column-group">
+        <label className="group-label">
+          <input
+            type="checkbox"
+            checked={groupColumns.every((column) => visibility[column])}
+            onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
+          />
+          {groupName}&nbsp;
+        </label>
+        {groupColumns.map((column) => (
+          <div key={column} className="checkbox-container">
+            <input
+              type="checkbox"
+              id={column}
+              checked={visibility[column]}
+              onChange={() => handleCheckboxChange(column)}
+            />
+            <label htmlFor={column} className="checkbox-label">
+              {columnMapping[column]}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  
+    return (
+      <div>
+        <div className="group-container">
+          {renderGroup('Personal Information', ['empID', 'empName', 'empBday', 'empGender'])}
+          {renderGroup('', ['empHomeaddress', 'empMaritalstatus', 'empNationality', 'empReligion'])}
+          {renderGroup('Contact Information', ['empPhonenum', 'empEmail'])}
+          {renderGroup('Work Profile', ['empStatus', 'empCompany', 'empCompanyaddress', 'empDeptID', 'empDept', 'empPosition', 'empDateofhire'])}
+          {renderGroup('Government IDs', ['empTinID', 'empHdmfID', 'empPhilhealthID', 'empSssID'])}
+          {renderGroup('Emergency Contact', ['empEMRGNCname', 'empEMRGNCrelationship', 'empEMRGNCphonenum'])}
+          {/* Add more groups as needed */}
+        </div>
+      </div>
+    );
+  };
+
   const [columnVisibility, setColumnVisibility] = useState({
     empID: true,
     empName: true,
@@ -57,9 +137,13 @@ const TableView = () => {
     empGender: 'Gender',
     empPhonenum: 'Phone Number',
     empEmail: 'Email',
+    empHomeaddress: 'Home Address',
     empMaritalstatus: 'Marital Status',
     empNationality: 'Nationality',
     empReligion: 'Religion',
+    empStatus: 'Employment Status',
+    empCompany: 'Company',
+    empCompanyaddress: 'Company Address',
     empDeptID: 'Department ID',
     empDept: 'Department',
     empPosition: 'Position',
@@ -72,6 +156,7 @@ const TableView = () => {
     empEMRGNCrelationship: 'Emergency Contact Relationship',
     empEMRGNCphonenum: 'Emergency Contact Phone Number',
   };
+
   const renderTableHeaders = () => (
     <tr>
       {Object.keys(columnMapping).map((header) => (
@@ -638,6 +723,11 @@ const TableView = () => {
           </div>
         </div>
       </div>
+      <ColumnVisibilityDropdown
+        columns={Object.keys(columnMapping)}
+        visibility={columnVisibility}
+        onChange={setColumnVisibility}
+      />
       {tableData.length > 0 && (
         <table className="styled-table">
           <thead>
