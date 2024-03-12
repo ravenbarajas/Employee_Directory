@@ -21,9 +21,13 @@ class EmployeeImport implements ToModel
         $empGender = $row['empGender'] ?? null;
         $empPhonenum = $row['empPhonenum'] ?? null;
         $empEmail = $row['empEmail'] ?? null;
+        $empHomeaddress = $row['empHomeaddress'] ?? null;
         $empMaritalstatus = $row['empMaritalstatus'] ?? null;
         $empNationality = $row['empNationality'] ?? null;
         $empReligion = $row['empReligion'] ?? null;
+        $empStatus = $row['empStatus'] ?? null;
+        $empCompany = $row['empCompany'] ?? null;
+        $empCompanyaddress = $row['empCompanyaddress'] ?? null;
         $empDeptID = $row['empDeptID'] ?? null;
         $empDept = $row['empDept'] ?? null;
         $empPosition = $row['empPosition'] ?? null;
@@ -48,9 +52,13 @@ class EmployeeImport implements ToModel
                 'empGender' => $empGender,
                 'empPhonenum' => $empPhonenum,
                 'empEmail' => $empEmail,
+                'empHomeaddress' => $empHomeaddress,
                 'empMaritalstatus' => $empMaritalstatus,
                 'empNationality' => $empNationality,
                 'empReligion' => $empReligion,
+                'empStatus' => $empStatus,
+                'empCompany' => $empCompany,
+                'empCompanyaddress' => $empCompanyaddress,
                 'empDeptID' => $empDeptID,
                 'empDept' => $empDept,
                 'empPosition' => $empPosition,
