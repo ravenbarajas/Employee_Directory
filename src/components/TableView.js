@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import Modal from 'react-modal';
@@ -6,17 +6,14 @@ import './css/TableView.css'; // Import the stylesheet
 import './css/EditModal.css'; // Import the stylesheet
 import './css/CreateModal.css'; // Import the stylesheet
 import './css/DetailsModal.css'; // Import the stylesheet
-import './css/ExportModal.css'; // Import the stylesheet
 import EditModal from './modal/EditModal.js'; // Import the EditModal component
 import CreateModal from './modal/CreateModal.js'; // Import the CreateModal component
 import DetailsModal from './modal/DetailsModal.js'; // Import the DetailsModal component
-import ExportModal from './modal/ExportModal.js'; // Import the ExportModal component
 import { saveAs } from 'file-saver';
 import * as FileSaver from 'file-saver';
-import Dropdown from 'react-dropdown-select';
+import { Resizable } from 'react-resizable';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
-
 
 const TableView = () => {
   const [headers, setHeaders] = useState([]);
@@ -29,7 +26,7 @@ const TableView = () => {
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(15);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [sortOption, setSortOption] = useState(''); // New state for sorting
   const [sortOrder, setSortOrder] = useState('asc'); // or 'desc' for descending
@@ -38,10 +35,17 @@ const TableView = () => {
   const [sheetHeaders, setSheetHeaders] = useState([]);
   const [visibleColumns, setVisibleColumns] = useState(sheetHeaders); // Initialize with all columns
 
+  const rowsPerPageOptions = [15, 25, 50];
+
+  const handleRowsPerPageChange = (e) => {
+    const newRowsPerPage = parseInt(e.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    // Additional logic based on the new rows per page value
+  };
+
   const ColumnVisibilityDropdown = ({ columns, visibility, onChange }) => {
+  
     const columnMapping = {
-      empID: 'Employee ID',
-      empName: 'Employee Name',
       empBday: 'Date of Birth',
       empGender: 'Gender',
       empPhonenum: 'Phone Number',
@@ -61,9 +65,9 @@ const TableView = () => {
       empHdmfID: 'HDMF ID',
       empPhilhealthID: 'PhilHealth ID',
       empSssID: 'SSS ID',
-      empEMRGNCname: 'Emergency Contact Name',
-      empEMRGNCrelationship: 'Emergency Contact Relationship',
-      empEMRGNCphonenum: 'Emergency Contact Phone Number',
+      empEMRGNCname: 'Name',
+      empEMRGNCrelationship: 'Relationship',
+      empEMRGNCphonenum: 'Phone Number',
     };
     const handleCheckboxChange = (column) => {
       const updatedVisibility = { ...visibility, [column]: !visibility[column] };
@@ -79,17 +83,19 @@ const TableView = () => {
   
     const renderGroup = (groupName, groupColumns) => (
       <div key={groupName} className="column-group">
-        <label className="group-label">
-          <input
-            type="checkbox"
-            checked={groupColumns.every((column) => visibility[column])}
-            onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
-          />
-          {groupName}&nbsp;
-        </label>
+        <div className='group-label-container'>
+          <label className="group-label">
+            <input
+              type="checkbox"
+              checked={groupColumns.every((column) => visibility[column])}
+              onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
+            />
+            &nbsp;{groupName}
+          </label>
+        </div>
         {groupColumns.map((column) => (
           <div key={column} className="checkbox-container">
-            <input
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
               type="checkbox"
               id={column}
               checked={visibility[column]}
@@ -106,10 +112,9 @@ const TableView = () => {
     return (
       <div>
         <div className="group-container">
-          {renderGroup('Personal Information', ['empID', 'empName', 'empBday', 'empGender'])}
-          {renderGroup('', ['empHomeaddress', 'empMaritalstatus', 'empNationality', 'empReligion'])}
+          {renderGroup('Personal Information', ['empBday', 'empGender','empHomeaddress', 'empMaritalstatus', 'empNationality', 'empReligion'])}
           {renderGroup('Contact Information', ['empPhonenum', 'empEmail'])}
-          {renderGroup('Work Profile', ['empStatus', 'empCompany', 'empCompanyaddress', 'empDeptID', 'empDept', 'empPosition', 'empDateofhire'])}
+          {renderGroup('Work Profile', ['empStatus', 'empCompany', 'empCompanyaddress', 'empDeptID', 'empDateofhire'])}
           {renderGroup('Government IDs', ['empTinID', 'empHdmfID', 'empPhilhealthID', 'empSssID'])}
           {renderGroup('Emergency Contact', ['empEMRGNCname', 'empEMRGNCrelationship', 'empEMRGNCphonenum'])}
           {/* Add more groups as needed */}
@@ -123,8 +128,6 @@ const TableView = () => {
     empName: true,
     empDept: true,
     empPosition: true,
-    empPhonenum: true,
-    empEmail: true,
     // ... other columns with initial visibility
   });
 
@@ -157,12 +160,57 @@ const TableView = () => {
     empEMRGNCphonenum: 'Emergency Contact Phone Number',
   };
 
+  const [columnWidths, setColumnWidths] = useState({
+    Actions: 100, // Initial width for the Actions column
+    // Add initial widths for other columns here
+  });
+  
+  // Function to handle column width adjustment
+  const handleWidthAdjustment = (columnName, newWidth) => {
+    setColumnWidths((prevWidths) => ({
+      ...prevWidths,
+      [columnName]: newWidth,
+    }));
+  };
+  
+  const handleMouseDown = (e, columnName) => {
+    const initialWidth = columnWidths[columnName];
+    const initialX = e.pageX;
+    
+    const handleMouseMove = (e) => {
+      const widthChange = e.pageX - initialX;
+      handleWidthAdjustment(columnName, initialWidth + widthChange);
+    };
+  
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  
   const renderTableHeaders = () => (
     <tr>
+      <th style={{ width: columnWidths.Actions }}>
+        Actions
+        <div
+          className="resize-handle"
+          onMouseDown={(e) => handleMouseDown(e, 'Actions')}
+        />
+      </th>
       {Object.keys(columnMapping).map((header) => (
-        columnVisibility[header] && <th key={header}>{columnMapping[header]}</th>
+        columnVisibility[header] && (
+          <th key={header} style={{ width: columnWidths[header] }}>
+            {columnMapping[header]}
+            <div
+              className="resize-handle"
+              onMouseDown={(e) => handleMouseDown(e, header)}
+            />
+          </th>
+        )
       ))}
-      <th>Actions</th>
     </tr>
   );
   
@@ -622,9 +670,6 @@ const TableView = () => {
 
     return paginatedData.map((row, index) => (
       <tr key={index} onClick={() => handleDetails(row)}>
-      {headers.map((header) => (
-        columnVisibility[header] && <td key={header}>{row[header]}</td>
-      ))}
         <td>
           <button className="tv-editbtn" onClick={(e) => { e.stopPropagation(); handleEdit(row) }}>
             Edit
@@ -633,6 +678,9 @@ const TableView = () => {
             Delete
           </button>
         </td>
+      {headers.map((header) => (
+        columnVisibility[header] && <td key={header}>{row[header]}</td>
+      ))}
       </tr>
     ));
   };
@@ -655,105 +703,125 @@ const TableView = () => {
   );  
 
   return (
-    <div className="table-container">
-      <div className='tv-action'>
-        <div className='tv-heading'>
-          <h2>Employee Directory</h2>
+    <div className='table-container'>
+      <div className='table-container-header'>
+        <h2>Employee Directory</h2>
+      </div>
+      <div className='table-section' >
+        <div className='table-sidebar-section'>
+          <div className='sidebar-filter'>
+            <div className='tv-body-filter'>
+              <div className='tv-action-sort'>
+                <select
+                  class="tv-dropdown"
+                  value={sortOption}
+                  onChange={(e) => handleSort(e.target.value)}
+                >              
+                  <option value="">Select Filter</option>
+                  <option value="empID">Employee ID</option>s
+                  <option value="empName">Employee Name</option>
+                  <option value="empDeptID">Department</option>
+                  {/* Add more sorting options as needed */}
+                </select>
+              </div>
+            </div>
+            <ColumnVisibilityDropdown
+              columns={Object.keys(columnMapping)}
+              visibility={columnVisibility}
+              onChange={setColumnVisibility}
+            />
+          </div>
         </div>
-
-        <div className='tv-body'>
-          <div className='tv-body-filter'>
-            <div className='tv-action-sort'>
-              <label htmlFor="sortDropdown"></label>
-              <select
-                id="sortDropdown"
-                value={sortOption}
-                onChange={(e) => handleSort(e.target.value)}
-              >              
-                <option value="">Select Filter</option>
-                <option value="empID">Employee ID</option>
-                <option value="empName">Employee Name</option>
-                <option value="empDeptID">Department</option>
-                {/* Add more sorting options as needed */}
-              </select>
-            </div>
-            <div className='tv-action-search'>
-              <input
-              className='styled-search'
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset the current page to the first page when performing a new search
-                }}
-              />
-            </div>
-          </div>
-<         div className='tv-body-maintenance'>
-            <div className='tv-action-export'>
-              <button className="tv-exportcsvbtn" onClick={exportToCSV}>
-              <i class="fa-solid fa-file-csv"></i>&nbsp;&nbsp;Export to CSV
-              </button>
-              <button className="tv-exportxlsxbtn" onClick={exportToXLSX}>
-              <i class="fa-solid fa-file-excel"></i>&nbsp;&nbsp;Export to XLSX
-              </button>
-            </div>
-          </div>
-          <div className='tv-body-upload'>
-            <div className='tv-action-create'>
-                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
-                <i className="fas fa-plus"></i>&nbsp;&nbsp;Add Employee
-                </button>
-            </div>
-            <div className='tv-action-upload custom-file-container'>
-                <label htmlFor="fileInput" className="custom-file-button">
-                    <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Import Data
+        <div className='table-content-section'>
+          <div className='tableview-tablecontent'>
+            <div className='styled-table-controls'>
+              <div className='tv-action-search'>
+                <input
+                className='styled-search'
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1); // Reset the current page to the first page when performing a new search
+                  }}
+                />
+              </div>
+              <div className='rowsPerPage-dropdown'>
+                <label>
+                  Rows per Page:&nbsp;
+                  <select 
+                    value={rowsPerPage} 
+                    onChange={handleRowsPerPageChange}
+                    className="rowsPerPage"
+                    >
+                    {rowsPerPageOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 </label>
-                <input type="file" id="fileInput" onChange={handleFileChange} />
-                {fileUploaded && (
-                    <span className="custom-file-name">{fileUploaded.name}</span>
-                )}
-                {fileUploaded && (
-                    <button className="custom-save-button" onClick={handleSave}>
-                    <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save to Database
-                    </button>
-                )}
+              </div>
+              <div className='tableview-pagination'>
+                <button className="btn-firstpage" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                  <i className="fa-solid fa-backward-fast"></i>
+                </button>
+                <button className="btn-prevpage" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                  <i className="fa-solid fa-caret-left"></i>
+                </button>
+                <span className='pagination-indicator'>{`${currentPage} of ${totalPages}`}</span>
+                <button className="btn-nextpage" onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastRow >= filteredTableData.length}>
+                  <i className="fa-solid fa-caret-right"></i>
+                </button>
+                <button className="btn-lastpage" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
+                  <i className="fa-solid fa-forward-fast"></i>
+                </button>
+              </div>
+              <div className='tv-action-export'>
+                <button className="tv-exportcsvbtn" onClick={exportToCSV}>
+                <i class="fa-solid fa-file-csv"></i>&nbsp;&nbsp;Export to CSV
+                </button>
+                <button className="tv-exportxlsxbtn" onClick={exportToXLSX}>
+                <i class="fa-solid fa-file-excel"></i>&nbsp;&nbsp;Export to XLSX
+                </button>
+              </div>
+              <div className='tv-body-upload'>
+                <button className="tv-createbtn" onClick={() => setIsCreateModalOpen(true)}>
+                  <i className="fas fa-plus"></i>&nbsp;&nbsp;Single Import
+                </button>
+                <div className='tv-action-upload custom-file-container'>
+                    <label htmlFor="fileInput" className="custom-file-button">
+                        <i className="fa-solid fa-upload"></i>&nbsp;&nbsp;Bulk Import
+                    </label>
+                    <input type="file" id="fileInput" onChange={handleFileChange} />
+                    {fileUploaded && (
+                        <span className="custom-file-name">{fileUploaded.name}</span>
+                    )}
+                    {fileUploaded && (
+                        <button className="custom-save-button" onClick={handleSave}>
+                        <i className="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save
+                        </button>
+                    )}
+                </div>
+              </div>
+            </div>
+            <div className='styled-table-container'>
+              {tableData.length > 0 && (
+                <table className="styled-table">  
+                  <thead>
+                    {renderTableHeaders()}
+                  </thead>
+                  <tbody>
+                    {renderTableRows()}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
       </div>
-      <ColumnVisibilityDropdown
-        columns={Object.keys(columnMapping)}
-        visibility={columnVisibility}
-        onChange={setColumnVisibility}
-      />
-      {tableData.length > 0 && (
-        <table className="styled-table">
-          <thead>
-            {renderTableHeaders()}
-          </thead>
-          <tbody>{renderTableRows()}</tbody>
-        </table>
-      )}
-
-      {/* Pagination buttons */}
-      <div className='tableview-pagination'>
-        <button className="btn-firstpage" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-          <i className="fa-solid fa-backward-fast"></i>
-        </button>
-        <button className="btn-prevpage" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-          <i className="fa-solid fa-caret-left"></i>
-        </button>
-        <span className='pagination-indicator'>{`${currentPage} of ${totalPages}`}</span>
-        <button className="btn-nextpage" onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastRow >= filteredTableData.length}>
-          <i className="fa-solid fa-caret-right"></i>
-        </button>
-        <button className="btn-lastpage" onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
-          <i className="fa-solid fa-forward-fast"></i>
-        </button>
-      </div>
-
+      
       {isEditModalOpen && (
         <div className="edit-modal-overlay">
           <EditModal employee={selectedEmployee} onUpdate={handleUpdate} onClose={() => {setIsEditModalOpen(false); setSelectedEmployee({});}} />
