@@ -26,7 +26,7 @@ const TableView = () => {
   const [filteredTableData, setFilteredTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(15);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [sortOption, setSortOption] = useState(''); // New state for sorting
   const [sortOrder, setSortOrder] = useState('asc'); // or 'desc' for descending
@@ -35,7 +35,7 @@ const TableView = () => {
   const [sheetHeaders, setSheetHeaders] = useState([]);
   const [visibleColumns, setVisibleColumns] = useState(sheetHeaders); // Initialize with all columns
 
-  const rowsPerPageOptions = [15, 25, 50];
+  const rowsPerPageOptions = [20, 30, 50];
 
   const handleRowsPerPageChange = (e) => {
     const newRowsPerPage = parseInt(e.target.value, 10);
@@ -69,33 +69,52 @@ const TableView = () => {
       empEMRGNCrelationship: 'Relationship',
       empEMRGNCphonenum: 'Phone Number',
     };
-    const handleCheckboxChange = (column) => {
-      const updatedVisibility = { ...visibility, [column]: !visibility[column] };
-      onChange(updatedVisibility);
-    };
-    const handleGroupCheckboxChange = (groupColumns, checked) => {
-      const updatedVisibility = { ...visibility };
-      groupColumns.forEach((column) => {
-        updatedVisibility[column] = checked;
-      });
-      onChange(updatedVisibility);
-    };
-  
-    const renderGroup = (groupName, groupColumns) => (
-      <div key={groupName} className="column-group">
-        <div className='group-label-container'>
-          <label className="group-label">
-            <input
-              type="checkbox"
-              checked={groupColumns.every((column) => visibility[column])}
-              onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
-            />
-            &nbsp;{groupName}
-          </label>
+    const [expandedGroups, setExpandedGroups] = useState({});
+
+  const handleCheckboxChange = (column) => {
+    const updatedVisibility = { ...visibility, [column]: !visibility[column] };
+    onChange(updatedVisibility);
+  };
+
+  const handleGroupCheckboxChange = (groupColumns, checked) => {
+    const updatedVisibility = { ...visibility };
+    groupColumns.forEach((column) => {
+      updatedVisibility[column] = checked;
+    });
+    onChange(updatedVisibility);
+  };
+
+  const toggleGroupExpansion = (groupName) => {
+    setExpandedGroups((prevExpandedGroups) => ({
+      ...prevExpandedGroups,
+      [groupName]: !prevExpandedGroups[groupName],
+    }));
+  };
+
+  const renderGroup = (groupName, groupColumns) => (
+    <div key={groupName} className="column-group">
+      <div className="group-label-container">
+        <div className='group-label-expand'>
+          <button
+            className={`group-toggle-btn ${expandedGroups[groupName] ? 'expanded' : ''}`}
+            onClick={() => toggleGroupExpansion(groupName)}
+          >
+            {expandedGroups[groupName] ? '-' : '+'}
+          </button>
         </div>
-        {groupColumns.map((column) => (
+        <label className="group-label">
+          <input
+            type="checkbox"
+            checked={groupColumns.every((column) => visibility[column])}
+            onChange={(e) => handleGroupCheckboxChange(groupColumns, e.target.checked)}
+          />
+          &nbsp;{groupName}
+        </label>
+      </div>
+      {expandedGroups[groupName] && groupColumns.map((column) => (
+        <div className='checkbox-wrapper'>
           <div key={column} className="checkbox-container">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input
+            <input
               type="checkbox"
               id={column}
               checked={visibility[column]}
@@ -105,23 +124,24 @@ const TableView = () => {
               {columnMapping[column]}
             </label>
           </div>
-        ))}
-      </div>
-    );
-  
-    return (
-      <div>
-        <div className="group-container">
-          {renderGroup('Personal Information', ['empBday', 'empGender','empHomeaddress', 'empMaritalstatus', 'empNationality', 'empReligion'])}
-          {renderGroup('Contact Information', ['empPhonenum', 'empEmail'])}
-          {renderGroup('Work Profile', ['empStatus', 'empCompany', 'empCompanyaddress', 'empDeptID', 'empDateofhire'])}
-          {renderGroup('Government IDs', ['empTinID', 'empHdmfID', 'empPhilhealthID', 'empSssID'])}
-          {renderGroup('Emergency Contact', ['empEMRGNCname', 'empEMRGNCrelationship', 'empEMRGNCphonenum'])}
-          {/* Add more groups as needed */}
         </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="group-container">
+        {renderGroup('Personal Information', ['empBday', 'empGender','empHomeaddress', 'empMaritalstatus', 'empNationality', 'empReligion'])}
+        {renderGroup('Contact Information', ['empPhonenum', 'empEmail'])}
+        {renderGroup('Work Profile', ['empStatus', 'empCompany', 'empCompanyaddress', 'empDeptID', 'empDateofhire'])}
+        {renderGroup('Government IDs', ['empTinID', 'empHdmfID', 'empPhilhealthID', 'empSssID'])}
+        {renderGroup('Emergency Contact', ['empEMRGNCname', 'empEMRGNCrelationship', 'empEMRGNCphonenum'])}
+        {/* Add more groups as needed */}
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const [columnVisibility, setColumnVisibility] = useState({
     empID: true,
@@ -733,8 +753,7 @@ const TableView = () => {
           </div>
         </div>
         <div className='table-content-section'>
-          <div className='tableview-tablecontent'>
-            <div className='styled-table-controls'>
+          <div className='styled-table-controls'>
               <div className='tv-action-search'>
                 <input
                 className='styled-search'
@@ -805,7 +824,8 @@ const TableView = () => {
                     )}
                 </div>
               </div>
-            </div>
+          </div>
+          <div className='tableview-tablecontent'>
             <div className='styled-table-container'>
               {tableData.length > 0 && (
                 <table className="styled-table">  
