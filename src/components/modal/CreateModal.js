@@ -45,7 +45,8 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
     empSssID: '',
     empEMRGNCname: '', 
     empEMRGNCrelationship: '',
-    empEMRGNCphonenum: '',  
+    empEMRGNCphonenum: '',
+    dialCode: '',  
     // Add other fields as needed
   });
 
@@ -71,11 +72,11 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
   const maritalStatusOptions = ['Single', 'Married', 'Divorced', 'Widowed', 'Separated'];
 
      // Predefined employment status options
-  const employmentStatusOptions = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship', 'Temporary'];
+  const employmentStatusOptions = ['Full-time', 'Part-time', 'Probation', 'Contract', 'Freelance', 'Internship'];
   
   useEffect(() => {
     // Extract nationalities from the imported countries data
-    const nationalitiesList = countries.map(country => country.name);
+    const nationalitiesList = countries.map(country => country.nationality);
     setNationalities(nationalitiesList);
   }, []);
 
@@ -100,9 +101,7 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
             .join('');
 
     return randomPassword;
-};
-
-  // Function to generate empID based on the existing logic
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -110,29 +109,50 @@ const CreateModal = ({ onClose, onEmployeeCreated }) => {
         ...prevData,
         [name]: value,
     }));
-};
+  };
 
-const handleDialCodeChange = (e) => {
-  const { name, value } = e.target;
-  if (name === 'empNationality') {
-    // Update the selected nationality
-    setSelectedNationality(value);
-    // Find the selected nationality object
-    const selectedNationalityObj = countries.find(country => country.name === value);
-    // Set the phone number input value to the dial code of the selected nationality
-    setNewEmployeeData(prevData => ({
-      ...prevData,
-      empNationality: value,
-      empPhonenum: selectedNationalityObj ? selectedNationalityObj.dial_code : ''
-    }));
-  } else {
-    setNewEmployeeData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }
-};
+  const handleDialCodeChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'empNationality') {
+      // Update the selected nationality
+      setSelectedNationality(value);
+      // Find the selected nationality object
+      const selectedNationalityObj = countries.find(country => country.nationality === value);
+      const dialCodeValue = selectedNationalityObj ? selectedNationalityObj.dial_code : '';
+      // Set the phone number input value to the dial code of the selected nationality
+      setNewEmployeeData(prevData => ({
+        ...prevData,
+        empNationality: value,
+        dialCode: dialCodeValue,
+      }));
+    } else {
+      const updatedPhoneNumber = newEmployeeData.dialCode + value;
+      setNewEmployeeData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
 
+  const parsePhoneNumber = (phoneNumber) => {
+    if (!phoneNumber) {
+      // Handle empty or undefined dates
+      return null;
+    }
+    // Ensure phoneNumber is treated as a string
+    const phoneNumberString = String(phoneNumber);
+  
+    // Assuming the phone number format is "639212806805"
+    // You may need to adjust this based on your actual phone number format
+    const countryCode = phoneNumberString.slice(0, 3);
+    const areaCode = phoneNumberString.slice(3, 6);
+    const subscriberNumber1 = phoneNumberString.slice(6, 9);
+    const subscriberNumber2 = phoneNumberString.slice(9);
+  
+    // Format the phone number as per your requirements
+    return `${countryCode} (${areaCode}) ${subscriberNumber1} ${subscriberNumber2}`;
+  };
+  
   const handleDepartmentChange = (e) => {
     const selectedDepartment = departmentList.find((dept) => dept.deptName === e.target.value);
 
@@ -146,46 +166,62 @@ const handleDialCodeChange = (e) => {
   const handleCreate = async () => {
     const isConfirmed = window.confirm('Are you sure the entered information is correct?');
     if (!isConfirmed) {
-      // If the user cancels the confirmation, return early
-      return;
+        // If the user cancels the confirmation, return early
+        return;
     }
     try {
-      // Perform create logic using an API call or other suitable method
-      const response = await fetch('http://localhost:8000/api/employees', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEmployeeData),
-      });
+        // Ensure the dial code is concatenated with the phone numbers
+        const updatedPhoneNumber = newEmployeeData.dialCode + newEmployeeData.empPhonenum;
+        const updatedEmergencyPhoneNumber = newEmployeeData.dialCode + newEmployeeData.empEMRGNCphonenum;
 
-      if (response.ok) {
-        console.log('Creating new employee:', newEmployeeData);
+        // Format the concatenated phone numbers
+        const formattedPhoneNumber = parsePhoneNumber(updatedPhoneNumber);
+        const formattedEmergencyPhoneNumber = parsePhoneNumber(updatedEmergencyPhoneNumber);
 
-        // Close the modal
-        onClose();
+        // Update newEmployeeData with formatted phone numbers
+        const updatedEmployeeData = {
+            ...newEmployeeData,
+            empPhonenum: formattedPhoneNumber,
+            empEMRGNCphonenum: formattedEmergencyPhoneNumber,
+        };
 
-        // Notify the parent component that a new employee is created
-        if (onEmployeeCreated) {
-          onEmployeeCreated();
+        // Perform create logic using an API call or other suitable method
+        const response = await fetch('http://localhost:8000/api/employees', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedEmployeeData), // Use the updated data with formatted phone numbers
+        });
+
+        if (response.ok) {
+            console.log('Creating new employee:', updatedEmployeeData);
+
+            // Close the modal
+            onClose();
+
+            // Notify the parent component that a new employee is created
+            if (onEmployeeCreated) {
+                onEmployeeCreated();
+            }
+            // Show a dialog box for successful creation
+            window.alert('Employee created successfully!');
+
+            // Refresh the entire page
+            window.location.reload();
+        } else {
+            // Log the error details
+            const errorDetails = await response.json();
+            console.error('Failed to create new employee:', errorDetails);
+
+            // Throw an error to be caught in the catch block
+            throw new Error('Failed to create new employee');
         }
-        // Show a dialog box for successful creation
-        window.alert('Employee created successfully!');
-
-        // Refresh the entire page
-        window.location.reload();
-      } else {
-        // Log the error details
-        const errorDetails = await response.json();
-        console.error('Failed to create new employee:', errorDetails);
-
-        // Throw an error to be caught in the catch block
-        throw new Error('Failed to create new employee');
-      }
     } catch (error) {
-      console.error('Error creating new employee:', error);
+        console.error('Error creating new employee:', error);
     }
   };
+
 
   // Render row sections based on the current page
   const renderRowSections = () => {
@@ -340,10 +376,20 @@ const handleDialCodeChange = (e) => {
                         </div>
                         <div className='cm-input-wrapper'>
                           <input
+                              className='cm-dialcode'
+                              type="text"
+                              name="empPhonenum"
+                              value={`${newEmployeeData.dialCode} `}
+                              readOnly
+                              style={{ width: "60px" , borderRadius: '.25rem 0 0 .25rem', borderRight: '0px',}} // Adjust width as needed
+                          />
+                          <input
+                            className='cm-phonenum'
                             type="text"
                             name="empPhonenum"
                             value={newEmployeeData.empPhonenum}
                             onChange={handleDialCodeChange}
+                            style={{ borderRadius: '0 .25rem .25rem 0',}}
                           />
                         </div>
                       </div>
@@ -606,11 +652,20 @@ const handleDialCodeChange = (e) => {
                           <label>Phone Number: </label>
                         </div>
                         <div className='cm-input-wrapper'>
+                        <input
+                              className='cm-dialcode'
+                              type="text"
+                              name="empPhonenum"
+                              value={`${newEmployeeData.dialCode} `}
+                              readOnly
+                              style={{ width: "60px" , borderRadius: '.25rem 0 0 .25rem', borderRight: '0px',}} // Adjust width as needed
+                          />
                           <input 
                             type="text" 
                             name="empEMRGNCphonenum" 
                             value={newEmployeeData.empEMRGNCphonenum} 
-                            onChange={handleInputChange}
+                            onChange={handleDialCodeChange}
+                            style={{ borderRadius: '0 .25rem .25rem 0',}}
                           />
                         </div>
                       </div>
