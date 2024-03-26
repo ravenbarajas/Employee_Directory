@@ -1,4 +1,5 @@
 /* EditModal.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .create-modal-overlay {
     position: fixed;
@@ -12,11 +13,12 @@
     justify-content: center;
   }
   .create-modal {
+    display: flex;
+    flex-direction: column;
     background-color: #ebebeb;
-    padding: 1rem;
-    border-radius: 8px;
-    width: 50%; /* Adjust the width as needed */
-    max-width: 500px; /* Set a maximum width if desired */
+    border-radius: .25rem;
+    width: 850px;
+    height: auto;/* Set a maximum width if desired */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   .create-modal h2 {
@@ -26,20 +28,24 @@
   .create-modal form {
     display: flex;
     flex-direction: column;
-    width: 500px;
-    height: 350px;
-
+    height: auto;
+    padding: 1rem;
+  }
+  .cm-content {
+    display: flex;
+    flex-direction: column;
   }
   .create-modal p {
     margin: .5rem 0 .5rem 0;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-family: "Roboto", sans-serif;
     font-size: 16px;
   }
   .create-modal label {
     display: flex;
     font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 500;
+    font-family: "Roboto", sans-serif;
   }
   .create-modal input {
     width: 100%;
@@ -70,7 +76,6 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    margin-top: 1rem;
   }
   .cm-create:hover {
     background-color: #3F704D;
@@ -93,14 +98,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+    background-color: #d2d2d2;
+    padding: 1rem;
+    border-radius: .25rem .25rem 0 0;
   }
   .cm-header-title {
     display: flex;
     justify-content: start;
     align-items: center;
     width: 100%;
+  }
+  .cm-header-title h2{
+    margin: 0;
+    padding: .5rem 0 .5rem .5rem;
   }
   .cm-header-close {
     background-color: transparent;
@@ -117,8 +127,10 @@
   }
   .cm-form-action {
     display: flex;
+    max-height: 34px;
     justify-content: end;
-    align-items: center;
+    align-items: end;
+    padding: 0 1rem 1rem 0;
   }
   .cm-dept {
     width: 100%;
@@ -153,6 +165,8 @@
   .cm-1strow {
     display: flex;
     flex-direction: column;
+    padding: 0 .15rem 0 0;
+    width: 425px;
   }
   .cm-1strow-header {
     display: flex;
@@ -177,6 +191,8 @@
   .cm-2ndrow {
     display: flex;
     flex-direction: column;
+    padding: 0 .15rem 0 0;
+    width: 425px;
   }
   .cm-2ndrow-header {
     display: flex;
@@ -201,6 +217,8 @@
   .cm-3rdrow {
     display: flex;
     flex-direction: column;
+    padding: 0 0 0 .15rem;
+    width: 425px;
   }
   .cm-3rdrow-header {
     display: flex;
@@ -225,6 +243,8 @@
   .cm-4throw {
     display: flex;
     flex-direction: column;
+    padding: 0 0 0 .15rem;
+    width: 425px;
   }
   .cm-4throw-header {
     display: flex;
@@ -288,10 +308,18 @@
   .cm-input-wrapper {
     display: flex;
     flex-direction: row;
-    padding: .25rem 0 .5rem .25rem;
+    padding: .25rem .25rem 0 0;
     background-color: #ebebeb;
   }
   .cm-phonenum-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  .cm-tinID-wrapper {
     display: flex;
     flex-direction: row;
     margin: 0;
@@ -307,4 +335,24 @@
     border-radius: 0 .25rem 0 .25rem;
     box-sizing: border-box; 
     max-height: 34px;
+  }
+  .cm-1stcol {
+    display: flex;
+    flex-direction: row;
+    padding: 0 .5rem 0 .5rem;
+  }
+  .cm-2ndcol {
+    display: flex;
+    flex-direction: row;
+    padding: 0 .5rem 0 .5rem;
+  }
+  .cm-helptext-wrapper {
+    display: flex;
+    flex-direction: row;
+    padding: 2px 0 .5rem 0;
+    background-color: #ebebeb;
+  }
+  .cm-helptext-wrapper label {
+    font-size: 11px;
+    color: #ebebeb;
   }
